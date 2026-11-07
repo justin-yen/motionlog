@@ -33,7 +33,7 @@ struct TodayRoutineView: View {
                 .background(AppTheme.background)
                 .navigationTitle("Today’s Routine")
                 .safeAreaInset(edge: .top) {
-                    Text(routine.scheduledFor.formatted(date: .long, time: .omitted))
+                    Text(Date.now.formatted(date: .long, time: .omitted))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .padding(.bottom, 4)
@@ -41,7 +41,7 @@ struct TodayRoutineView: View {
             } else if model.isLoading {
                 ProgressView("Loading today’s routine…")
             } else {
-                ContentUnavailableView("No routine today", systemImage: "calendar", description: Text("Your next prescribed routine will appear here."))
+                ContentUnavailableView("No current routine", systemImage: "calendar", description: Text("Your prescribed routine will appear here once it is added."))
             }
         }
     }

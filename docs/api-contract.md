@@ -22,11 +22,11 @@ All user-owned tables use the authenticated Supabase user ID and Row Level Secur
 
 The returned access and refresh tokens are stored in the iOS Keychain. Phone numbers remain in Supabase Auth and are not duplicated into health-data tables.
 
-## Today’s routine
+## Current routine
 
-`GET /rest/v1/routines?scheduled_for=eq.2026-11-06&select=*,routine_items(*,exercise:exercises(*))`
+`GET /rest/v1/routines?scheduled_for=lte.2026-11-06&order=scheduled_for.desc&limit=1&select=*,routine_items(*,exercise:exercises(*))`
 
-Routine items are ordered by `position`. Reordering updates only the affected `position` values.
+For the MVP, `scheduled_for` is the routine version's effective date. The most recent routine whose effective date is today or earlier is the user's current prescription and remains active until a newer version is created. Routine items are ordered by `position`. Exercise logs are date-specific, so changing the current prescription does not rewrite past adherence.
 
 ## Exercise log
 

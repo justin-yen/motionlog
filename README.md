@@ -31,7 +31,7 @@ Voice notes are transcribed with Apple's speech recognition after recording stop
 
 ### Seeded development prescription
 
-The hosted test account has a routine for November 6, 2026:
+The hosted test account has a routine effective November 6, 2026. It remains the current routine on subsequent days until a newer prescription replaces it:
 
 - Shoulder flexion wall slide (facing wall), 3 × 10
 - Shoulder flexion wall slide (facing forward), 3 × 10

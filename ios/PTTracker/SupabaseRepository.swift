@@ -9,11 +9,11 @@ actor SupabasePTRepository: PTRepository {
 
     func todayRoutine() async throws -> Routine {
         let day = LocalDateKey.string(for: .now)
-        let query = "routines?scheduled_for=eq.\(day)&select=id,title,scheduled_for,routine_items(id,position,target_sets,target_reps,target_duration_seconds,target_band_resistance,target_weight_value,target_weight_unit,prescription_notes,exercise:exercises(id,name,tracking_mode,instructions,image_path,video_url,pt_note))&routine_items.order=position.asc&limit=1"
+        let query = "routines?scheduled_for=lte.\(day)&select=id,title,scheduled_for,routine_items(id,position,target_sets,target_reps,target_duration_seconds,target_band_resistance,target_weight_value,target_weight_unit,prescription_notes,exercise:exercises(id,name,tracking_mode,instructions,image_path,video_url,pt_note))&order=scheduled_for.desc&routine_items.order=position.asc&limit=1"
         let data = try await client.rest(path: query)
         let decoder = JSONDecoder.supabase
         guard let dto = try decoder.decode([RoutineDTO].self, from: data).first else {
-            throw ClientError.server(message: "No routine is scheduled for today.")
+            throw ClientError.server(message: "No current routine has been prescribed yet.")
         }
         return dto.model
     }
