@@ -1,0 +1,14 @@
+# Local credentials
+ios/Config/Secrets.xcconfig
+.env
+
+# Xcode
+DerivedData/
+.derivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+
+# Supabase local state
+supabase/.branches/
+supabase/.temp/

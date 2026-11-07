@@ -1,0 +1,42 @@
+project_id = "pt-tracker"
+
+[api]
+enabled = true
+port = 55321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 55322
+shadow_port = 55320
+major_version = 17
+
+[studio]
+enabled = true
+port = 55323
+
+[auth]
+enabled = true
+site_url = "pttracker://auth"
+additional_redirect_urls = ["pttracker://auth"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.sms]
+enable_signup = true
+enable_confirmations = true
+template = "Your PT Tracker code is {{ .Code }}"
+max_frequency = "60s"
+
+# Development only. Test numbers bypass SMS delivery and must be removed before beta.
+[auth.sms.test_otp]
+12025550147 = "123456"
+
+[auth.hook.send_sms]
+enabled = true
+uri = "pg-functions://postgres/public/reject_real_sms"
+
+[storage]
+enabled = true
+file_size_limit = "25MiB"
