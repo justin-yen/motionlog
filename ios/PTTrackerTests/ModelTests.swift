@@ -40,3 +40,13 @@ final class VoiceLogParserTests: XCTestCase {
         XCTAssertEqual(result.bandResistance, "Red band")
     }
 }
+
+final class LocalDateKeyTests: XCTestCase {
+    func testUsesDeviceDayWhenUTCHasAlreadyAdvanced() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "America/New_York"))
+        let date = try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-11-07T04:12:00Z"))
+
+        XCTAssertEqual(LocalDateKey.string(for: date, calendar: calendar), "2026-11-06")
+    }
+}

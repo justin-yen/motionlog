@@ -8,7 +8,7 @@ actor SupabasePTRepository: PTRepository {
     }
 
     func todayRoutine() async throws -> Routine {
-        let day = Date.now.formatted(.iso8601.year().month().day())
+        let day = LocalDateKey.string(for: .now)
         let query = "routines?scheduled_for=eq.\(day)&select=id,title,scheduled_for,routine_items(id,position,target_sets,target_reps,target_duration_seconds,target_band_resistance,target_weight_value,target_weight_unit,prescription_notes,exercise:exercises(id,name,tracking_mode,instructions,image_path,video_url,pt_note))&routine_items.order=position.asc&limit=1"
         let data = try await client.rest(path: query)
         let decoder = JSONDecoder.supabase
@@ -101,6 +101,16 @@ actor SupabasePTRepository: PTRepository {
             body: body,
             prefer: "return=minimal"
         )
+    }
+}
+
+enum LocalDateKey {
+    static func string(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
+        let parts = calendar.dateComponents([.year, .month, .day], from: date)
+        guard let year = parts.year, let month = parts.month, let day = parts.day else {
+            return date.formatted(.iso8601.year().month().day())
+        }
+        return String(format: "%04d-%02d-%02d", year, month, day)
     }
 }
 
