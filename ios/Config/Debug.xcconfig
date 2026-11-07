@@ -2,13 +2,8 @@
 PRODUCT_BUNDLE_IDENTIFIER = com.example.PTTracker
 SWIFT_VERSION = 6.0
 IPHONEOS_DEPLOYMENT_TARGET = 17.0
-GENERATE_INFOPLIST_FILE = YES
-INFOPLIST_KEY_CFBundleDisplayName = PT Tracker
-INFOPLIST_KEY_NSMicrophoneUsageDescription = PT Tracker records voice notes so you can log an exercise hands-free.
-INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = PT Tracker converts your voice note into exercise details for you to review.
-INFOPLIST_KEY_SUPABASE_URL = $(SUPABASE_URL)
-INFOPLIST_KEY_SUPABASE_ANON_KEY = $(SUPABASE_ANON_KEY)
-INFOPLIST_KEY_PT_USE_MOCK_DATA = $(PT_USE_MOCK_DATA)
+GENERATE_INFOPLIST_FILE = NO
+INFOPLIST_FILE = PTTracker/Info.plist
 SUPABASE_URL = $(inherited)
 SUPABASE_ANON_KEY = $(inherited)
 PT_USE_MOCK_DATA = NO
