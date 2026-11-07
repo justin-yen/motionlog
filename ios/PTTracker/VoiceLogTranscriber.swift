@@ -20,52 +20,86 @@ enum VoiceTranscriptionError: LocalizedError {
 
 @MainActor
 final class VoiceLogTranscriber {
-    private var task: SFSpeechRecognitionTask?
-    private var continuation: CheckedContinuation<String, Error>?
-
     func transcribe(url: URL) async throws -> VoiceLogExtraction {
-        guard await requestAuthorization() else { throw VoiceTranscriptionError.permissionDenied }
-        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en_US")), recognizer.isAvailable else {
-            throw VoiceTranscriptionError.unavailable
-        }
-
-        let request = SFSpeechURLRecognitionRequest(url: url)
-        request.shouldReportPartialResults = false
-        request.taskHint = .dictation
-
-        let transcript = try await withCheckedThrowingContinuation { continuation in
-            self.continuation = continuation
-            self.task = recognizer.recognitionTask(with: request) { [weak self] result, error in
-                Task { @MainActor in
-                    guard let self, self.continuation != nil else { return }
-                    if let error {
-                        self.finish(.failure(error))
-                    } else if let result, result.isFinal {
-                        let text = result.bestTranscription.formattedString
-                            .trimmingCharacters(in: .whitespacesAndNewlines)
-                        self.finish(text.isEmpty ? .failure(VoiceTranscriptionError.emptyTranscript) : .success(text))
-                    }
-                }
-            }
-        }
+        guard await Self.requestAuthorization() else { throw VoiceTranscriptionError.permissionDenied }
+        let transcript = try await Self.recognize(url: url)
         return VoiceLogParser.parse(transcript)
     }
 
-    private func finish(_ result: Result<String, Error>) {
-        task?.finish()
-        task = nil
-        let pending = continuation
-        continuation = nil
-        pending?.resume(with: result)
-    }
-
-    private func requestAuthorization() async -> Bool {
+    private nonisolated static func requestAuthorization() async -> Bool {
         if SFSpeechRecognizer.authorizationStatus() == .authorized { return true }
         return await withCheckedContinuation { continuation in
             SFSpeechRecognizer.requestAuthorization { status in
                 continuation.resume(returning: status == .authorized)
             }
         }
+    }
+
+    private nonisolated static func recognize(url: URL) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            let bridge = RecognitionBridge(continuation: continuation)
+            guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en_US")), recognizer.isAvailable else {
+                bridge.finish(.failure(VoiceTranscriptionError.unavailable))
+                return
+            }
+
+            let request = SFSpeechURLRecognitionRequest(url: url)
+            request.shouldReportPartialResults = false
+            request.taskHint = .dictation
+            let task = recognizer.recognitionTask(with: request) { result, error in
+                if let error {
+                    bridge.finish(.failure(error))
+                } else if let result, result.isFinal {
+                    let text = result.bestTranscription.formattedString
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    bridge.finish(
+                        text.isEmpty
+                            ? .failure(VoiceTranscriptionError.emptyTranscript)
+                            : .success(text)
+                    )
+                }
+            }
+            bridge.retain(recognizer: recognizer, task: task)
+        }
+    }
+}
+
+private final class RecognitionBridge: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<String, Error>?
+    private var recognizer: SFSpeechRecognizer?
+    private var task: SFSpeechRecognitionTask?
+
+    init(continuation: CheckedContinuation<String, Error>) {
+        self.continuation = continuation
+    }
+
+    func retain(recognizer: SFSpeechRecognizer, task: SFSpeechRecognitionTask) {
+        lock.lock()
+        guard continuation != nil else {
+            lock.unlock()
+            task.cancel()
+            return
+        }
+        self.recognizer = recognizer
+        self.task = task
+        lock.unlock()
+    }
+
+    func finish(_ result: Result<String, Error>) {
+        lock.lock()
+        guard let pending = continuation else {
+            lock.unlock()
+            return
+        }
+        continuation = nil
+        let activeTask = task
+        task = nil
+        recognizer = nil
+        lock.unlock()
+
+        activeTask?.finish()
+        pending.resume(with: result)
     }
 }
 
