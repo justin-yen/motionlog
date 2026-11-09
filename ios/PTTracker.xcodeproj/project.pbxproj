@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		018A294197C89B0B8F5C5E74 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D50D6AE7C1617965374574F /* Models.swift */; };
 		12F7F09EE4E4C8ACB57B5BC5 /* ExerciseLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69AD9EAE869127E7E272BFA9 /* ExerciseLogView.swift */; };
+		13ECA893B2CBF071B70C57B0 /* ExerciseLogParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EBB0DCCEF324651122D0EA /* ExerciseLogParsingService.swift */; };
 		19F074B5F41C737958C036F4 /* RoutineViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC31309544EAE215E11A65C6 /* RoutineViews.swift */; };
 		2A78E3B0ED162B75B10EAFBC /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6336F6C1E0DCB33259EC7C2C /* AppConfiguration.swift */; };
 		36B333381BC7824D158CDBF9 /* VoiceLogTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523563FDF554BB99EAB5C140 /* VoiceLogTranscriber.swift */; };
@@ -46,6 +47,7 @@
 		761D7508DE4E788E0D5827B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		873416E508EB78CDA1336C1D /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		9786162D8C0B43C0B97432F8 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		99EBB0DCCEF324651122D0EA /* ExerciseLogParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLogParsingService.swift; sourceTree = "<group>"; };
 		9D50D6AE7C1617965374574F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		B1F7DE9CD69668807A5CBC13 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		B497419B6F7DDA9856AB5800 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				5BA4F5215C986C7E3A5ED11E /* AppTheme.swift */,
 				B1F7DE9CD69668807A5CBC13 /* AudioRecorder.swift */,
 				63DE603AB85207019C03E2FA /* AuthViews.swift */,
+				99EBB0DCCEF324651122D0EA /* ExerciseLogParsingService.swift */,
 				69AD9EAE869127E7E272BFA9 /* ExerciseLogView.swift */,
 				B497419B6F7DDA9856AB5800 /* HistoryView.swift */,
 				761D7508DE4E788E0D5827B9 /* Info.plist */,
@@ -206,6 +209,7 @@
 				820B5A5718D0BA178CA3E590 /* AppTheme.swift in Sources */,
 				D1C65E4E4DECE35E7F691ABC /* AudioRecorder.swift in Sources */,
 				FF5B0379CCC5B83ADC08BC7C /* AuthViews.swift in Sources */,
+				13ECA893B2CBF071B70C57B0 /* ExerciseLogParsingService.swift in Sources */,
 				12F7F09EE4E4C8ACB57B5BC5 /* ExerciseLogView.swift in Sources */,
 				8706CAF4A9D18C3FDEF93A8A /* HistoryView.swift in Sources */,
 				018A294197C89B0B8F5C5E74 /* Models.swift in Sources */,
@@ -296,6 +300,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -312,6 +317,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

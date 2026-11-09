@@ -88,6 +88,7 @@ struct ExerciseLogDraft: Sendable {
     var bandResistance: String?
     var weightValue: Double?
     var weightUnit: WeightUnit?
+    var painAfter: Int?
     var notes: String?
     var localAudioURL: URL?
     var voiceExtraction: VoiceLogExtraction?
@@ -101,7 +102,9 @@ struct VoiceLogExtraction: Codable, Equatable, Sendable {
     var bandResistance: String?
     var weightValue: Double?
     var weightUnit: WeightUnit?
+    var painAfter: Int?
     var eachSide: Bool
+    var noteBullets: [String]
 
     var structuredData: [String: Any] {
         var values: [String: Any] = ["each_side": eachSide]
@@ -111,6 +114,8 @@ struct VoiceLogExtraction: Codable, Equatable, Sendable {
         if let bandResistance { values["band_resistance"] = bandResistance }
         if let weightValue { values["weight_value"] = weightValue }
         if let weightUnit { values["weight_unit"] = weightUnit.rawValue }
+        if let painAfter { values["pain_after"] = painAfter }
+        if !noteBullets.isEmpty { values["note_bullets"] = noteBullets }
         return values
     }
 }
@@ -126,6 +131,7 @@ struct ExerciseLog: Identifiable, Codable, Sendable {
     let bandResistance: String?
     let weightValue: Double?
     let weightUnit: WeightUnit?
+    let painAfter: Int?
     let notes: String?
     let hasAudio: Bool
 
@@ -140,6 +146,7 @@ struct ExerciseLog: Identifiable, Codable, Sendable {
         case bandResistance = "band_resistance"
         case weightValue = "weight_value"
         case weightUnit = "weight_unit"
+        case painAfter = "pain_after"
         case hasAudio = "has_audio"
     }
 
@@ -152,6 +159,7 @@ struct ExerciseLog: Identifiable, Codable, Sendable {
         if let weightValue, let weightUnit {
             parts.append("\(weightValue.formatted()) \(weightUnit.rawValue)")
         }
+        if let painAfter { parts.append("Pain \(painAfter)/10") }
         return parts.isEmpty ? "Completed" : parts.joined(separator: " · ")
     }
 }

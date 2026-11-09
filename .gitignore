@@ -8,6 +8,7 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 .DS_Store
+.dev-cache/
 
 # Supabase local state
 supabase/.branches/

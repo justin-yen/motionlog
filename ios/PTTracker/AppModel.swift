@@ -17,21 +17,28 @@ final class AppModel: ObservableObject {
     let isMockMode: Bool
     private let repository: any PTRepository
     private let supabase: SupabaseClient?
+    private let exerciseLogParser: any ExerciseLogParsingService
 
     init(configuration: AppConfiguration = .current) {
         isMockMode = configuration.useMockData
         if configuration.useMockData {
             repository = MockPTRepository()
             supabase = nil
+            exerciseLogParser = LocalExerciseLogParsingService()
             authStep = .authenticated
         } else if let url = configuration.supabaseURL, let key = configuration.supabaseAnonKey {
             let client = SupabaseClient(baseURL: url, anonKey: key)
             repository = SupabasePTRepository(client: client)
             supabase = client
+            exerciseLogParser = FallbackExerciseLogParsingService(
+                primary: SupabaseExerciseLogParsingService(client: client),
+                fallback: LocalExerciseLogParsingService()
+            )
             authStep = KeychainStore.loadSession() == nil ? .phone : .authenticated
         } else {
             repository = MockPTRepository()
             supabase = nil
+            exerciseLogParser = LocalExerciseLogParsingService()
             authStep = .phone
             errorMessage = "Supabase configuration is missing."
         }
@@ -80,6 +87,14 @@ final class AppModel: ObservableObject {
         return didSave
     }
 
+    func parseVoiceLog(transcript: String, item: RoutineItem) async -> VoiceLogExtraction {
+        do {
+            return try await exerciseLogParser.parse(transcript: transcript, item: item)
+        } catch {
+            return VoiceLogParser.parse(transcript)
+        }
+    }
+
     func moveRoutineItems(from source: IndexSet, to destination: Int) async {
         guard var routine else { return }
         routine.routineItems.move(fromOffsets: source, toOffset: destination)
@@ -122,6 +137,12 @@ final class AppModel: ObservableObject {
         defer { isLoading = false }
         do {
             try await operation()
+        } catch ClientError.sessionExpired {
+            await supabase?.signOut()
+            routine = nil
+            history = []
+            authStep = .phone
+            errorMessage = ClientError.sessionExpired.localizedDescription
         } catch {
             errorMessage = error.localizedDescription
         }

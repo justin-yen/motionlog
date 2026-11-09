@@ -40,3 +40,6 @@ uri = "pg-functions://postgres/public/reject_real_sms"
 [storage]
 enabled = true
 file_size_limit = "25MiB"
+
+[functions.parse-exercise-log]
+verify_jwt = true

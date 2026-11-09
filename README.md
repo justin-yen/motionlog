@@ -29,6 +29,24 @@ This is a fictional test number. Supabase accepts its fixed code without sending
 
 Voice notes are transcribed with Apple's speech recognition after recording stops. The MVP parser recognizes common phrases for sets/reps, seconds or minutes, band color/resistance, pounds or kilograms, and “each side.” Extracted values populate the normal editable fields so the user confirms or corrects them before saving. The raw audio, transcript, and confirmed structured data are retained together.
 
+When Supabase is configured, authenticated voice transcripts are parsed by the `parse-exercise-log` Edge Function using OpenAI Structured Outputs. Ambiguous values are returned as `null` and remain blank in the form; the local deterministic parser remains a development and availability fallback. Configure the hosted function with Supabase secrets, never an iOS build setting:
+
+```sh
+supabase secrets set OPENAI_API_KEY=your-key
+# Optional; defaults to gpt-4o-mini
+supabase secrets set OPENAI_MODEL=gpt-4o-mini
+supabase functions deploy parse-exercise-log
+```
+
+Some iOS Simulator runtimes do not expose a reliable Apple speech engine. The shared `PTTracker` Xcode scheme automatically starts the local-only Whisper fallback when you Run the app. To start it independently:
+
+```sh
+python3 scripts/dev_transcription_server.py
+```
+
+The fallback listens only on `127.0.0.1`; physical devices use Apple's on-device speech engine.
+Its development log is written to `/tmp/motionlog-transcription.log`.
+
 ### Seeded development prescription
 
 The hosted test account has a routine effective November 6, 2026. It remains the current routine on subsequent days until a newer prescription replaces it:

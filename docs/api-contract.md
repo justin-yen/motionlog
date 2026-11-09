@@ -54,13 +54,23 @@ Only `exercise_id` is required. Repetition, duration, resistance, weight, and sy
 
 1. Generate an `audio_recordings` ID on the client.
 2. Upload the source recording to the private `session-audio` bucket at `{user_id}/{recording_id}.m4a`.
-3. Apple speech recognition transcribes the local recording and the MVP parser extracts structured values.
-4. The user confirms or edits those values in the normal exercise form.
-5. Upload the raw audio and create the linked row with `transcript`, `structured_data`, and a completed `transcription_status`.
+3. Apple speech recognition transcribes the local recording.
+4. The authenticated app sends the transcript and current exercise context to `POST /functions/v1/parse-exercise-log`.
+5. The Edge Function calls the model with a strict JSON schema, validates its response, and returns nullable structured values. Ambiguous values remain `null`; no separate ambiguity UI is shown.
+6. The user confirms or edits populated values in the normal exercise form.
+7. Upload the raw audio and create the linked row with `transcript`, `structured_data`, and a completed `transcription_status`.
 
 If local transcription is unavailable, the raw audio is still uploaded with a pending status so a future server worker can retry it.
 
 Raw audio is retained for the MVP. Access is restricted to its owner.
+
+### Parse an exercise transcript
+
+`POST /functions/v1/parse-exercise-log`
+
+The request is authenticated with the user's Supabase access token. Version 1 accepts the transcript, exercise name and tracking mode, and nullable prescription context. The contract retains prescription context for compatibility, but the Edge Function deliberately withholds prescription targets from the model so assigned values cannot be mistaken for completed work.
+
+The response contains nullable fields for sets, repetitions, duration, band resistance, weight, pain, and each-side status plus an array of note fragments. The iOS app accesses this contract through `ExerciseLogParsingService`, allowing the endpoint to move to a standalone MotionLog backend later without changing the form UI.
 
 ## History
 

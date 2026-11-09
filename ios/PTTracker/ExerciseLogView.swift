@@ -13,6 +13,7 @@ struct ExerciseLogView: View {
     @State private var band = ""
     @State private var weight = ""
     @State private var weightUnit: WeightUnit = .lb
+    @State private var pain: Double?
     @State private var notes = ""
     @State private var extraction: VoiceLogExtraction?
     @State private var isTranscribing = false
@@ -46,9 +47,30 @@ struct ExerciseLogView: View {
                 }
             }
 
+            Section("Pain") {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Pain during or after")
+                        Spacer()
+                        Text(pain.map { "\(Int($0)) / 10" } ?? "Not entered")
+                            .font(.headline.monospacedDigit())
+                    }
+                    Slider(value: painBinding, in: 0...10, step: 1)
+                        .accessibilityLabel("Pain during or after exercise")
+                        .accessibilityValue(pain.map { "\(Int($0)) out of 10" } ?? "Not entered")
+                    HStack {
+                        Text("No pain")
+                        Spacer()
+                        Text("Worst pain")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+            }
+
             Section("Notes") {
-                TextField("How did it feel?", text: $notes, axis: .vertical)
-                    .lineLimit(3...6)
+                TextField("Additional details", text: $notes, axis: .vertical)
+                    .lineLimit(4...8)
             }
 
             Section {
@@ -125,6 +147,7 @@ struct ExerciseLogView: View {
             bandResistance: band.nilIfBlank,
             weightValue: Double(weight),
             weightUnit: weight.nilIfBlank == nil ? nil : weightUnit,
+            painAfter: pain.map { Int($0.rounded()) },
             notes: notes.nilIfBlank,
             localAudioURL: recorder.recordingURL,
             voiceExtraction: extraction
@@ -153,7 +176,8 @@ struct ExerciseLogView: View {
         isTranscribing = true
         defer { isTranscribing = false }
         do {
-            let result = try await transcriber.transcribe(url: url)
+            let transcript = try await transcriber.transcribe(url: url)
+            let result = await model.parseVoiceLog(transcript: transcript, item: item)
             extraction = result
             apply(result)
         } catch {
@@ -162,15 +186,15 @@ struct ExerciseLogView: View {
     }
 
     private func apply(_ result: VoiceLogExtraction) {
-        if let value = result.setsCompleted { sets = String(value) }
-        if let value = result.repsPerSet { reps = String(value) }
-        if let value = result.durationSeconds { duration = String(value) }
-        if let value = result.bandResistance { band = value }
-        if let value = result.weightValue { weight = value.formatted() }
+        sets = result.setsCompleted.map(String.init) ?? ""
+        reps = result.repsPerSet.map(String.init) ?? ""
+        duration = result.durationSeconds.map(String.init) ?? ""
+        band = result.bandResistance ?? ""
+        weight = result.weightValue?.formatted() ?? ""
         if let value = result.weightUnit { weightUnit = value }
-        if result.eachSide, !notes.lowercased().contains("each side") {
-            notes = notes.nilIfBlank.map { "\($0) · Each side" } ?? "Each side"
-        }
+        pain = result.painAfter.map(Double.init)
+        let voiceNotes = result.noteBullets.map { "• \($0)" }.joined(separator: "\n")
+        notes = voiceNotes
     }
 
     private func loadPrescriptionDefaults() {
@@ -186,6 +210,13 @@ struct ExerciseLogView: View {
         Binding(
             get: { recorder.errorMessage != nil },
             set: { if !$0 { recorder.errorMessage = nil } }
+        )
+    }
+
+    private var painBinding: Binding<Double> {
+        Binding(
+            get: { pain ?? 0 },
+            set: { pain = $0 }
         )
     }
 }

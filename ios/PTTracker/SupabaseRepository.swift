@@ -34,6 +34,7 @@ actor SupabasePTRepository: PTRepository {
         body.put("band_resistance", draft.bandResistance)
         body.put("weight_value", draft.weightValue)
         body.put("weight_unit", draft.weightUnit?.rawValue)
+        body.put("pain_after", draft.painAfter)
         body.put("notes", draft.notes)
 
         let data = try await client.rest(
@@ -181,6 +182,7 @@ private struct ExerciseLogRow: Decodable {
     let bandResistance: String?
     let weightValue: Double?
     let weightUnit: WeightUnit?
+    let painAfter: Int?
     let notes: String?
     let exercise: ExerciseName?
 
@@ -194,6 +196,7 @@ private struct ExerciseLogRow: Decodable {
         case bandResistance = "band_resistance"
         case weightValue = "weight_value"
         case weightUnit = "weight_unit"
+        case painAfter = "pain_after"
     }
 
     func model(exerciseName: String, hasAudio: Bool) -> ExerciseLog {
@@ -208,6 +211,7 @@ private struct ExerciseLogRow: Decodable {
             bandResistance: bandResistance,
             weightValue: weightValue,
             weightUnit: weightUnit,
+            painAfter: painAfter,
             notes: notes,
             hasAudio: hasAudio
         )

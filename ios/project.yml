@@ -24,10 +24,17 @@ targets:
     scheme:
       testTargets:
         - PTTrackerTests
+      preActions:
+        - name: Start Simulator transcription helper
+          script: /bin/zsh "$SRCROOT/../scripts/start_dev_transcription_server.sh"
+          settingsTarget: PTTracker
   PTTrackerTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - PTTrackerTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: PTTracker

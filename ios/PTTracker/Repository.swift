@@ -25,6 +25,7 @@ actor MockPTRepository: PTRepository {
             bandResistance: draft.bandResistance,
             weightValue: draft.weightValue,
             weightUnit: draft.weightUnit,
+            painAfter: draft.painAfter,
             notes: draft.notes,
             hasAudio: draft.localAudioURL != nil
         )

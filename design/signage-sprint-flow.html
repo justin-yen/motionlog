@@ -1,0 +1,416 @@
+<title>MotionLog Signage Sprint</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a gallery of 390×844 phone screens in flow order, grouped by stage of the app.
+   Single committed look (the Signage Sprint app is light-only), so every color is set explicitly. */
+:root {
+  --ink: #111827;          /* signage ink: type, borders, nav */
+  --sign: #F8D966;         /* chrome yellow: the one loud color */
+  --done: #4A6CF5;         /* completion blue, from the Today checks */
+  --paper: #FFFFFF;        /* screen ground */
+  --muted: #5F6676;        /* secondary text */
+  --hair: #D9DCE4;         /* list hairlines */
+  --canvas: #ECEDEF;       /* gallery ground behind phones */
+  --font: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { background: var(--canvas); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+.page { max-width: 1760px; margin: 0 auto; padding-block: 48px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 56px; }
+.intro { display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
+.intro .kicker { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.intro h1 { margin: 0; font-size: clamp(36px, 6vw, 60px); font-weight: 800; letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+.intro p { margin: 0; font-size: 17px; line-height: 1.55; color: var(--muted); max-width: 62ch; }
+.legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; font-weight: 600; color: var(--muted); padding-top: 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.tag { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; border: 1.5px solid var(--ink); }
+.tag.new { background: var(--sign); }
+.tag.ref { background: var(--paper); }
+
+.stage { display: flex; flex-direction: column; gap: 24px; }
+.stage-head { display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid var(--ink); padding-bottom: 12px; flex-wrap: wrap; }
+.stage-head h2 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+.stage-head p { margin: 0; font-size: 15px; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; gap: 40px 36px; }
+figure { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+figcaption { display: flex; flex-direction: column; gap: 6px; max-width: 390px; }
+figcaption .cap-top { display: flex; align-items: center; gap: 10px; }
+figcaption b { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+figcaption small { font-size: 14px; line-height: 1.45; color: var(--muted); }
+
+/* ---------- phone ---------- */
+.phone { width: 390px; height: 844px; flex-shrink: 0; background: var(--paper); border-radius: 46px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 0 rgba(17,24,39,.06), 0 18px 40px -24px rgba(17,24,39,.35); }
+@media (max-width: 440px) { .phone { zoom: .86; } }
+.status { height: 54px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 6px 34px 0 46px; font-size: 17px; font-weight: 700; }
+.status svg { display: block; }
+.screen { flex: 1; display: flex; flex-direction: column; padding: 0 24px; min-height: 0; }
+.eyebrow { font-size: 14px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.display { margin: 0; font-size: 44px; font-weight: 800; letter-spacing: -.04em; line-height: 1.02; }
+.lede { font-size: 16px; line-height: 1.5; color: var(--muted); margin: 0; }
+.label { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.rule { height: 2px; background: var(--ink); flex-shrink: 0; }
+
+.card { background: var(--sign); border: 2px solid var(--ink); border-radius: 18px; box-shadow: 6px 6px 0 var(--ink); }
+.pill { display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--ink); background: var(--sign); font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.btn { height: 60px; border-radius: 16px; border: 2px solid var(--ink); background: var(--sign); color: var(--ink); box-shadow: 4px 4px 0 var(--ink); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; flex-shrink: 0; }
+.btn.ink { background: var(--ink); color: var(--paper); box-shadow: 4px 4px 0 var(--sign); }
+.btn.ghost { background: var(--paper); box-shadow: none; }
+.btn.off { background: #F3F4F6; color: #9AA0AC; border-color: #C9CDD6; box-shadow: none; }
+.link { font-size: 15px; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; text-decoration-color: var(--sign); }
+
+.field { border: 2px solid var(--ink); border-radius: 14px; height: 58px; display: flex; align-items: center; padding: 0 16px; font-size: 18px; font-weight: 600; gap: 12px; background: var(--paper); }
+.field .ph { color: #9AA0AC; font-weight: 500; }
+
+.back { display: flex; align-items: center; gap: 4px; height: 44px; font-size: 14px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.topbar { display: flex; align-items: center; justify-content: space-between; }
+
+.list { display: flex; flex-direction: column; }
+.item { display: flex; align-items: center; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--hair); }
+.item .tick { width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; border: 2px solid var(--ink); display: flex; align-items: center; justify-content: center; }
+.item .tick.on { background: var(--done); border-color: var(--done); }
+.item .txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.item .name { font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+.item .meta { font-size: 15px; color: var(--muted); font-weight: 500; }
+.item .chev { width: 24px; flex-shrink: 0; display: flex; justify-content: flex-end; }
+
+.nav { position: absolute; left: 24px; right: 24px; bottom: 26px; height: 72px; background: var(--ink); border-radius: 22px; display: flex; align-items: center; padding: 0 14px; gap: 6px; }
+.nav span { flex: 1; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--paper); font-size: 15px; font-weight: 800; letter-spacing: .04em; border-radius: 13px; }
+.nav span.on { background: var(--sign); color: var(--ink); }
+.home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--ink); }
+.stack { display: flex; flex-direction: column; }
+.spacer { flex: 1; }
+.num { font-variant-numeric: tabular-nums; }
+</style>
+
+<div class="page">
+  <header class="intro">
+    <span class="kicker">MotionLog · Signage Sprint · Full flow</span>
+    <h1>Every screen, on the sign.</h1>
+    <p>The Signage Sprint Today screen carried across the rest of the app. Each screen keeps the content of the current build (November 7, 2026 simulator capture) and restyles it: ink type, one chrome-yellow sign per screen, blue for anything done.</p>
+    <div class="legend">
+      <span><i class="tag ref">From Paper</i> already designed in the sprint</span>
+      <span><i class="tag new">New</i> built out from the current app</span>
+    </div>
+  </header>
+
+  <!-- ================= SIGN IN ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>Sign in</h2><p>Phone number, then a six-digit code.</p></div>
+    <div class="row">
+
+      <!-- 01 Phone sign-in -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:40px; gap:0">
+            <div class="topbar">
+              <span style="font-size:22px; font-weight:800; letter-spacing:-.03em">MotionLog.</span>
+              <span class="pill">PT</span>
+            </div>
+            <div class="spacer" style="max-height:90px"></div>
+            <div class="stack" style="gap:16px">
+              <h1 class="display" style="font-size:48px">Your PT routine, remembered.</h1>
+              <p class="lede">Sign in with your phone number to see today's exercises and everything you've logged.</p>
+            </div>
+            <div class="stack" style="gap:10px; padding-top:36px">
+              <span class="label">Phone number</span>
+              <div class="field"><span>+1</span><span style="width:2px;height:24px;background:var(--hair)"></span><span class="ph num">212 555 0123</span></div>
+            </div>
+            <div style="padding-top:20px"><div class="btn">Text me a code</div></div>
+            <div class="spacer"></div>
+            <p style="font-size:13px; color:var(--muted); text-align:center; margin:0 0 44px">Message and data rates may apply.</p>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>01 · Phone sign-in</b><i class="tag new">New</i></span><small>The headline does the welcoming. One yellow sign, the action. The button stays yellow and live once ten digits are entered.</small></figcaption>
+      </figure>
+
+      <!-- 02 Code verification -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Back</div>
+            <div class="stack" style="gap:12px; padding-top:28px">
+              <span class="eyebrow num">Sent to +1 202 555 0147</span>
+              <h1 class="display">Enter your code.</h1>
+            </div>
+            <div style="display:flex; gap:8px; padding-top:32px">
+              <div class="field num" style="width:50px;height:64px;justify-content:center;padding:0;font-size:28px;font-weight:800">4</div>
+              <div class="field num" style="width:50px;height:64px;justify-content:center;padding:0;font-size:28px;font-weight:800">8</div>
+              <div class="field num" style="width:50px;height:64px;justify-content:center;padding:0;font-size:28px;font-weight:800">1</div>
+              <div class="field" style="width:50px;height:64px;justify-content:center;padding:0;background:var(--sign);box-shadow:3px 3px 0 var(--ink)"><span style="width:2px;height:28px;background:var(--ink)"></span></div>
+              <div class="field" style="width:50px;height:64px;padding:0;border-color:#C9CDD6"></div>
+              <div class="field" style="width:50px;height:64px;padding:0;border-color:#C9CDD6"></div>
+            </div>
+            <div style="padding-top:28px"><div class="btn off">Continue</div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:24px">
+              <span class="link">Use a different number</span>
+              <span style="font-size:14px; font-weight:600; color:var(--muted)" class="num">Resend in 0:24</span>
+            </div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>02 · Code verification</b><i class="tag new">New</i></span><small>Six boxes, and the active one is the sign. Continue stays grey until all six digits are in. A resend timer replaces the dead end in the current build.</small></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= TODAY ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>Today &amp; logging</h2><p>The routine, one move, and logging it by voice or by hand.</p></div>
+    <div class="row">
+
+      <!-- 03 Today (reference) -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Sat · Nov 7</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">Let’s move.</h1><span class="pill">Week 3</span></div>
+            <div class="card" style="margin-top:22px; padding:22px 22px; display:flex; align-items:center; justify-content:space-between; margin-right:6px">
+              <div class="stack" style="gap:6px">
+                <span class="label">Today’s routine</span>
+                <span style="font-size:27px; font-weight:800; letter-spacing:-.03em">2 moves to go</span>
+                <span style="font-size:15px; font-weight:500">About 12 minutes</span>
+              </div>
+              <div class="num" style="width:90px;height:90px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800">2/4</div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="list">
+              <div class="item"><span class="tick on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="txt"><span class="name">Bridge</span><span class="meta">45 sec</span></span><span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              <div class="item"><span class="tick on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="txt"><span class="name">Standing row</span><span class="meta">3 × 10 · Red band</span></span><span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Heel raise</span><span class="meta">2 × 12</span></span><span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Clamshell</span><span class="meta">2 × 10 · Green band</span></span><span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+            </div>
+          </div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>03 · Today</b><i class="tag ref">From Paper</i></span><small>The source of the system: the yellow routine sign, a heavy ink rule, blue checks, and the dark tab bar.</small></figcaption>
+      </figure>
+
+      <!-- 04 Exercise detail -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="topbar"><div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Today</div><span class="eyebrow num" style="font-size:13px">Move 3 of 4</span></div>
+            <div class="topbar" style="padding-top:14px; align-items:flex-end">
+              <h1 class="display">Heel raise.</h1>
+            </div>
+            <div class="card" style="margin-top:20px; margin-right:6px; padding:18px 20px; display:flex; align-items:stretch">
+              <div class="stack" style="flex:1; gap:4px"><span class="label">Sets</span><span class="num" style="font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1">2</span></div>
+              <div style="width:2px;background:var(--ink);margin:0 18px"></div>
+              <div class="stack" style="flex:1; gap:4px"><span class="label">Reps</span><span class="num" style="font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1">12</span></div>
+              <div style="width:2px;background:var(--ink);margin:0 18px"></div>
+              <div class="stack" style="flex:1.3; gap:4px"><span class="label">Load</span><span style="font-size:20px;font-weight:800;line-height:1.1;padding-top:8px">Body&shy;weight</span></div>
+            </div>
+            <div class="stack" style="gap:14px; padding-top:30px">
+              <span class="label">How to do it</span>
+              <div style="display:flex; gap:14px; align-items:baseline"><span class="num" style="width:22px;flex-shrink:0;font-size:20px;font-weight:800">1</span><span style="font-size:17px;line-height:1.45;font-weight:500">Stand tall, hands resting on a counter.</span></div>
+              <div style="display:flex; gap:14px; align-items:baseline"><span class="num" style="width:22px;flex-shrink:0;font-size:20px;font-weight:800">2</span><span style="font-size:17px;line-height:1.45;font-weight:500">Rise onto the balls of both feet.</span></div>
+              <div style="display:flex; gap:14px; align-items:baseline"><span class="num" style="width:22px;flex-shrink:0;font-size:20px;font-weight:800">3</span><span style="font-size:17px;line-height:1.45;font-weight:500">Lower for a slow count of three.</span></div>
+            </div>
+            <div style="margin-top:26px; background:var(--ink); color:var(--paper); border-radius:16px; padding:18px 20px; display:flex; flex-direction:column; gap:8px">
+              <span class="label" style="color:var(--sign)">From your PT</span>
+              <span style="font-size:18px;font-weight:700;line-height:1.4">Keep your weight over your big toes, not rolling out.</span>
+            </div>
+            <div style="padding-top:24px"><div class="btn">Log this exercise</div></div>
+          </div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>04 · Exercise detail</b><i class="tag new">New</i></span><small>The prescription becomes the yellow sign, split into sets, reps and load so it reads from arm's length. The PT's note is set in ink so it can't be skimmed past.</small></figcaption>
+      </figure>
+
+      <!-- 05 Exercise logging -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="topbar"><div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Heel raise</div><span class="eyebrow num" style="font-size:13px">Goal 2 × 12</span></div>
+            <h1 class="display" style="padding-top:14px">Log it.</h1>
+            <div class="card" style="margin-top:20px; margin-right:6px; padding:16px 18px; display:flex; align-items:center; gap:16px">
+              <span style="width:56px;height:56px;flex-shrink:0;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F8D966" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3" fill="#F8D966" stroke="none"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></span>
+              <span class="stack" style="gap:3px"><span style="font-size:20px;font-weight:800;letter-spacing:-.01em">Say what you did</span><span style="font-size:14px;font-weight:500">“Two sets of twelve, felt easy.”</span></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; padding:24px 0 14px"><span class="label" style="color:var(--muted)">Or enter it</span><span style="flex:1;height:1px;background:var(--hair)"></span></div>
+            <div style="display:flex; gap:12px">
+              <div class="stack" style="flex:1; gap:8px"><span class="label">Sets</span><div class="field num" style="justify-content:space-between"><span style="font-size:22px;font-weight:800;color:#9AA0AC">−</span><span style="font-size:22px;font-weight:800">2</span><span style="font-size:22px;font-weight:800">+</span></div></div>
+              <div class="stack" style="flex:1; gap:8px"><span class="label">Reps / set</span><div class="field num" style="justify-content:space-between"><span style="font-size:22px;font-weight:800">−</span><span style="font-size:22px;font-weight:800">12</span><span style="font-size:22px;font-weight:800">+</span></div></div>
+            </div>
+            <div class="stack" style="gap:8px; padding-top:14px"><span class="label">Resistance or weight</span>
+              <div style="display:flex; gap:10px">
+                <div class="field" style="flex:1"><span class="ph">Band or weight</span></div>
+                <div style="display:flex;border:2px solid var(--ink);border-radius:14px;overflow:hidden;height:58px;flex-shrink:0"><span style="width:52px;display:flex;align-items:center;justify-content:center;background:var(--ink);color:var(--paper);font-weight:800;font-size:15px">lb</span><span style="width:52px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px">kg</span></div>
+              </div>
+            </div>
+            <div class="stack" style="gap:10px; padding-top:14px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="label">Pain</span><span class="num" style="font-size:15px;font-weight:800">3<span style="color:var(--muted);font-weight:600"> / 10</span></span></div>
+              <div style="position:relative;height:28px;display:flex;align-items:center">
+                <div style="position:absolute;left:0;right:0;height:10px;border-radius:5px;border:2px solid var(--ink);background:var(--paper)"></div>
+                <div style="position:absolute;left:0;width:30%;height:10px;border-radius:5px 0 0 5px;border:2px solid var(--ink);border-right:none;background:var(--sign)"></div>
+                <div style="position:absolute;left:calc(30% - 14px);width:28px;height:28px;border-radius:50%;background:var(--ink);box-shadow:2px 2px 0 var(--sign)"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted)"><span>0 · None</span><span>10 · Worst</span></div>
+            </div>
+            <div class="stack" style="gap:8px; padding-top:12px"><span class="label">Notes</span><div class="field" style="height:52px"><span class="ph" style="font-size:16px">How did it feel?</span></div></div>
+            <div style="padding-top:18px"><div class="btn ink">Save exercise</div></div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>05 · Exercise logging</b><i class="tag new">New</i></span><small>Voice is the yellow sign at the top. Manual fields start pre-filled from the prescription and use steppers, so most logs take one tap. The tab bar hides here so Save stays in reach.</small></figcaption>
+      </figure>
+
+      <!-- 06 Voice confirm -->
+      <figure>
+        <div class="phone" style="background:var(--ink); color:var(--paper)">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#FFFFFF"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#FFFFFF" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="topbar"><div class="back" style="color:var(--paper)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Cancel</div><span class="eyebrow" style="color:#AEB4C2;font-size:13px">Heel raise</span></div>
+            <span class="eyebrow" style="color:var(--sign); padding-top:30px">You said</span>
+            <p style="margin:12px 0 0; font-size:28px; font-weight:700; letter-spacing:-.02em; line-height:1.3">“Did two sets of twelve, then a third set of eight. <span style="color:#AEB4C2">Left calf got tight near the end.</span>”</p>
+            <div style="display:flex; align-items:center; gap:3px; height:34px; padding-top:22px">
+              <span style="width:4px;height:10px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:18px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:26px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:14px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:22px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:30px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:12px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:20px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:8px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:16px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:24px;border-radius:2px;background:#4B5263"></span><span style="width:4px;height:10px;border-radius:2px;background:#4B5263"></span>
+              <span class="num" style="font-size:14px;font-weight:700;color:#AEB4C2;padding-left:10px">0:07 · Replay</span>
+            </div>
+            <div class="card" style="margin-top:30px; margin-right:6px; color:var(--ink); box-shadow:6px 6px 0 #4B5263; padding:6px 20px">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1.5px solid var(--ink)"><span class="label">Sets</span><span class="num" style="font-size:20px;font-weight:800">3</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1.5px solid var(--ink)"><span class="label">Reps</span><span class="num" style="font-size:20px;font-weight:800">12, 12, 8</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:20px"><span class="label">Note</span><span style="font-size:16px;font-weight:700;text-align:right">Left calf tight near end</span></div>
+            </div>
+            <div class="spacer"></div>
+            <div class="stack" style="gap:14px; padding-bottom:44px">
+              <div class="btn">Confirm &amp; save</div>
+              <span style="text-align:center;font-size:15px;font-weight:700;color:var(--paper);text-decoration:underline;text-underline-offset:4px">Edit before saving</span>
+            </div>
+          </div>
+          <div class="home-ind" style="background:var(--paper)"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>06 · Voice confirm</b><i class="tag new">New</i></span><small>After “Say what you did,” the screen turns to ink and shows the transcript. The values it pulled out sit on the yellow sign to check before saving. The audio, transcript and confirmed values are kept together, as in the current build.</small></figcaption>
+      </figure>
+
+      <!-- 07 Today complete -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Sat · Nov 7</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">Done for today.</h1></div>
+            <div class="card" style="margin-top:22px; margin-right:6px; padding:22px; background:var(--done); color:var(--paper); display:flex; align-items:center; justify-content:space-between">
+              <div class="stack" style="gap:6px">
+                <span class="label">Today’s routine</span>
+                <span style="font-size:27px; font-weight:800; letter-spacing:-.03em">All 4 moves logged</span>
+                <span style="font-size:15px; font-weight:500">14 minutes · next session Mon</span>
+              </div>
+              <div style="width:72px;height:72px;flex-shrink:0;border-radius:50%;border:2px solid var(--ink);background:var(--sign);display:flex;align-items:center;justify-content:center"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="list">
+              <div class="item"><span class="tick on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="txt"><span class="name">Bridge</span><span class="meta">50 sec · goal 45</span></span><span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              <div class="item"><span class="tick on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="txt"><span class="name">Standing row</span><span class="meta">3 × 10 · Red band</span></span><span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              <div class="item"><span class="tick on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="txt"><span class="name">Heel raise</span><span class="meta">3 sets · 12, 12, 8</span></span><span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              <div class="item"><span class="tick on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="txt"><span class="name">Clamshell</span><span class="meta">2 × 10 · Green band</span></span><span class="chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+            </div>
+          </div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>07 · Today, complete</b><i class="tag new">New</i></span><small>Once all four moves are logged, the sign turns completion-blue and the counter becomes a check. Each row shows what was actually done, so anything off the prescription is easy to spot.</small></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= HISTORY & PROFILE ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>History &amp; profile</h2><p>What you've logged, and account and privacy.</p></div>
+    <div class="row">
+
+      <!-- 08 History empty -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">No sessions yet</span>
+            <h1 class="display" style="padding-top:6px">History.</h1>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="stack" style="flex:1; justify-content:center; gap:22px; padding-bottom:140px">
+              <div style="display:flex; gap:8px">
+                <span style="flex:1;height:58px;border-radius:12px;border:2px dashed #C9CDD6"></span><span style="flex:1;height:58px;border-radius:12px;border:2px dashed #C9CDD6"></span><span style="flex:1;height:58px;border-radius:12px;border:2px dashed #C9CDD6"></span><span style="flex:1;height:58px;border-radius:12px;border:2px solid var(--ink);background:var(--sign);box-shadow:3px 3px 0 var(--ink)"></span><span style="flex:1;height:58px;border-radius:12px;border:2px dashed #C9CDD6"></span><span style="flex:1;height:58px;border-radius:12px;border:2px dashed #C9CDD6"></span><span style="flex:1;height:58px;border-radius:12px;border:2px dashed #C9CDD6"></span>
+              </div>
+              <div class="stack" style="gap:10px">
+                <span style="font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.15">Nothing logged yet.</span>
+                <p class="lede">Finish a move on Today and it shows up here with the date, what you did and any notes.</p>
+              </div>
+              <div><span class="btn" style="display:inline-flex;padding:0 26px">Go to Today</span></div>
+            </div>
+          </div>
+          <nav class="nav"><span>TODAY</span><span class="on">HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>08 · History, empty</b><i class="tag new">New</i></span><small>A blank week strip with today lit up hints at what will fill in. A direct button back to Today replaces the current dead-end message.</small></figcaption>
+      </figure>
+
+      <!-- 09 History filled -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Week 3 · 3 of 3 sessions</span>
+            <h1 class="display" style="padding-top:6px">History.</h1>
+            <div style="display:flex; gap:8px; padding-top:20px">
+              <div class="stack" style="flex:1;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--muted)">S</span><span style="width:100%;height:44px;border-radius:11px;border:2px solid var(--hair)"></span></div>
+              <div class="stack" style="flex:1;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--muted)">M</span><span style="width:100%;height:44px;border-radius:11px;background:var(--done);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+              <div class="stack" style="flex:1;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--muted)">T</span><span style="width:100%;height:44px;border-radius:11px;border:2px solid var(--hair)"></span></div>
+              <div class="stack" style="flex:1;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--muted)">W</span><span style="width:100%;height:44px;border-radius:11px;background:var(--done);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+              <div class="stack" style="flex:1;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--muted)">T</span><span style="width:100%;height:44px;border-radius:11px;border:2px solid var(--hair)"></span></div>
+              <div class="stack" style="flex:1;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--muted)">F</span><span style="width:100%;height:44px;border-radius:11px;border:2px solid var(--hair)"></span></div>
+              <div class="stack" style="flex:1;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--ink)">S</span><span style="width:100%;height:44px;border-radius:11px;border:2px solid var(--ink);background:var(--sign);box-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+            </div>
+            <div class="rule" style="margin-top:22px"></div>
+            <div style="display:flex;justify-content:space-between;padding:14px 0 2px"><span class="label">Today · Sat Nov 7</span><span class="label num" style="color:var(--muted)">4 moves</span></div>
+            <div class="list">
+              <div class="item" style="padding:12px 0"><span class="txt"><span class="name" style="font-size:17px">Heel raise</span><span class="meta" style="font-size:14px">3 sets · 12, 12, 8 · “Left calf tight”</span></span><span class="num" style="width:62px;flex-shrink:0;text-align:right;font-size:13px;font-weight:700;color:var(--muted)">9:22 AM</span></div>
+              <div class="item" style="padding:12px 0"><span class="txt"><span class="name" style="font-size:17px">Bridge</span><span class="meta" style="font-size:14px">50 sec</span></span><span class="num" style="width:62px;flex-shrink:0;text-align:right;font-size:13px;font-weight:700;color:var(--muted)">9:08 AM</span></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0 2px"><span class="label">Wed · Nov 4</span><span class="label num" style="color:var(--muted)">4 moves</span></div>
+            <div class="list">
+              <div class="item" style="padding:12px 0"><span class="txt"><span class="name" style="font-size:17px">Clamshell</span><span class="meta" style="font-size:14px">2 × 10 · Green band</span></span><span class="num" style="width:62px;flex-shrink:0;text-align:right;font-size:13px;font-weight:700;color:var(--muted)">6:41 PM</span></div>
+            </div>
+          </div>
+          <nav class="nav"><span>TODAY</span><span class="on">HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>09 · History, filled</b><i class="tag new">New</i></span><small>The week strip shows the habit at a glance: blue for days done, yellow for today. Entries are grouped by day and keep the note you spoke or typed.</small></figcaption>
+      </figure>
+
+      <!-- 10 Profile -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow num">+1 202 555 0147</span>
+            <h1 class="display" style="padding-top:6px">Profile.</h1>
+            <div class="card" style="margin-top:22px; margin-right:6px; padding:20px 22px; display:flex; justify-content:space-between; align-items:flex-end">
+              <div class="stack" style="gap:6px"><span class="label">Your plan</span><span style="font-size:24px;font-weight:800;letter-spacing:-.02em">Week 3 · 4 moves</span><span style="font-size:15px;font-weight:500">Updated by your PT on Nov 2</span></div>
+            </div>
+            <div class="rule" style="margin-top:26px"></div>
+            <div class="stack" style="padding-top:14px; gap:6px"><span class="label">Privacy</span></div>
+            <div class="list">
+              <div class="item" style="align-items:flex-start"><span style="width:36px;height:36px;flex-shrink:0;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F8D966" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3" fill="#F8D966" stroke="none"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></span><span class="txt"><span class="name" style="font-size:17px">Voice notes are kept</span><span class="meta" style="font-size:14px;line-height:1.45">Each recording is saved with its transcript and the values you confirmed.</span></span></div>
+              <div class="item" style="align-items:flex-start"><span style="width:36px;height:36px;flex-shrink:0;border-radius:50%;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg></span><span class="txt"><span class="name" style="font-size:17px">Export and delete</span><span class="meta" style="font-size:14px;line-height:1.45">Not in this version. Account deletion arrives before the App Store release.</span></span></div>
+            </div>
+            <div style="padding-top:26px"><div class="btn ghost">Sign out</div></div>
+          </div>
+          <nav class="nav"><span>TODAY</span><span>HISTORY</span><span class="on">PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>10 · Profile</b><i class="tag new">New</i></span><small>Replaces Settings and matches the Profile tab in the sprint. Your plan is the sign. The privacy notes from the current build are rewritten as plain statements. Sign out is a quiet outline button.</small></figcaption>
+      </figure>
+    </div>
+  </section>
+</div>
