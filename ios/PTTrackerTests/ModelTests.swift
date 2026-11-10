@@ -2,6 +2,47 @@ import XCTest
 @testable import PTTracker
 
 final class ModelTests: XCTestCase {
+    func testHistoryDayHasOnlyCompletePartialAndSkippedStates() {
+        let routine = SampleData.routine
+        let date = Date()
+        let first = routine.routineItems[0]
+        let second = routine.routineItems[1]
+        let completeLog = ExerciseLog(
+            id: UUID(), exerciseID: first.exercise.id, exerciseName: first.exercise.name,
+            performedAt: date, setsCompleted: nil, repsPerSet: nil, durationSeconds: 45,
+            bandResistance: nil, weightValue: nil, weightUnit: nil, painAfter: nil,
+            notes: nil, hasAudio: false
+        )
+        let partialLog = ExerciseLog(
+            id: UUID(), exerciseID: second.exercise.id, exerciseName: second.exercise.name,
+            performedAt: date, setsCompleted: 2, repsPerSet: 8, durationSeconds: nil,
+            bandResistance: "Red band", weightValue: nil, weightUnit: nil, painAfter: nil,
+            notes: nil, hasAudio: false
+        )
+
+        let snapshot = HistoryDaySnapshot.make(date: date, routine: routine, logs: [completeLog, partialLog])
+
+        XCTAssertEqual(snapshot.status, .partial)
+        XCTAssertEqual(snapshot.exercises.map(\.status), [.complete, .partial, .skipped, .skipped])
+    }
+
+    func testHistoryDayIsCompleteOnlyWhenEveryExerciseMeetsItsPrescription() {
+        let routine = SampleData.routine
+        let date = Date()
+        let logs = routine.routineItems.map { item in
+            ExerciseLog(
+                id: UUID(), exerciseID: item.exercise.id, exerciseName: item.exercise.name,
+                performedAt: date, setsCompleted: item.targetSets, repsPerSet: item.targetReps,
+                durationSeconds: item.targetDurationSeconds, bandResistance: item.targetBandResistance,
+                weightValue: item.targetWeightValue, weightUnit: item.targetWeightUnit,
+                painAfter: nil, notes: nil, hasAudio: false
+            )
+        }
+
+        XCTAssertEqual(HistoryDaySnapshot.make(date: date, routine: routine, logs: logs).status, .complete)
+        XCTAssertEqual(HistoryDaySnapshot.make(date: date, routine: routine, logs: []).status, .skipped)
+    }
+
     func testPrescriptionSummaryKeepsBandAndWeightSeparate() {
         let item = RoutineItem(
             id: UUID(),

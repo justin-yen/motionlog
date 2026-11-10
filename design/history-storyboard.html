@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MotionLog History Storyboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* History tab storyboard. Same Signage Sprint tokens as signage-sprint-flow.html:
+   ink type, one chrome-yellow sign per screen, completion blue for anything done. Light-only by design. */
+:root {
+  --ink: #111827; --sign: #F8D966; --done: #4A6CF5; --paper: #FFFFFF;
+  --muted: #5F6676; --hair: #D9DCE4; --soft: #C9CDD6; --canvas: #ECEDEF;
+  --font: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+.page { max-width: 1760px; margin: 0 auto; padding: 48px 16px 80px; display: flex; flex-direction: column; gap: 56px; }
+.intro { display: flex; flex-direction: column; gap: 10px; max-width: 820px; }
+.intro .kicker { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.intro h1 { margin: 0; font-size: clamp(36px, 6vw, 60px); font-weight: 800; letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+.intro p { margin: 0; font-size: 17px; line-height: 1.55; color: var(--muted); max-width: 66ch; }
+.keyrow { display: flex; flex-wrap: wrap; gap: 10px 22px; padding-top: 8px; font-size: 14px; font-weight: 600; color: var(--muted); }
+.keyrow span { display: inline-flex; align-items: center; gap: 8px; }
+
+.stage { display: flex; flex-direction: column; gap: 24px; }
+.stage-head { display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid var(--ink); padding-bottom: 12px; flex-wrap: wrap; }
+.stage-head h2 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+.stage-head p { margin: 0; font-size: 15px; color: var(--muted); max-width: 70ch; }
+.row { display: flex; flex-wrap: wrap; gap: 44px 36px; }
+figure { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+figcaption { display: flex; flex-direction: column; gap: 8px; max-width: 390px; }
+figcaption b { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+figcaption small { font-size: 14px; line-height: 1.5; color: var(--muted); }
+figcaption .pc { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+figcaption .pc em { font-style: normal; font-weight: 800; color: var(--ink); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding-top: 2px; }
+
+/* ---------- phone ---------- */
+.phone { width: 390px; height: 844px; flex-shrink: 0; background: var(--paper); border-radius: 46px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 0 rgba(17,24,39,.06), 0 18px 40px -24px rgba(17,24,39,.35); }
+@media (max-width: 440px) { .phone { zoom: .86; } }
+.status { height: 54px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 6px 34px 0 46px; font-size: 17px; font-weight: 700; }
+.screen { flex: 1; display: flex; flex-direction: column; padding: 0 24px; min-height: 0; }
+.eyebrow { font-size: 14px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.display { margin: 0; font-size: 44px; font-weight: 800; letter-spacing: -.04em; line-height: 1.02; }
+.label { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.label.m { color: var(--muted); }
+.rule { height: 2px; background: var(--ink); flex-shrink: 0; }
+.hair { height: 1px; background: var(--hair); flex-shrink: 0; }
+.card { background: var(--sign); border: 2px solid var(--ink); border-radius: 18px; box-shadow: 6px 6px 0 var(--ink); margin-right: 6px; }
+.pill { display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--ink); background: var(--sign); font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.pill.ghost { background: var(--paper); }
+.btn { height: 60px; border-radius: 16px; border: 2px solid var(--ink); background: var(--sign); box-shadow: 4px 4px 0 var(--ink); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; flex-shrink: 0; margin-right: 4px; }
+.btn.ghost { background: var(--paper); box-shadow: none; }
+.back { display: flex; align-items: center; gap: 4px; height: 44px; font-size: 14px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.stack { display: flex; flex-direction: column; }
+.spacer { flex: 1; }
+.num { font-variant-numeric: tabular-nums; }
+.nav { position: absolute; left: 24px; right: 24px; bottom: 26px; height: 72px; background: var(--ink); border-radius: 22px; display: flex; align-items: center; padding: 0 14px; gap: 6px; z-index: 3; }
+.nav span { flex: 1; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--paper); font-size: 15px; font-weight: 800; letter-spacing: .04em; border-radius: 13px; }
+.nav span.on { background: var(--sign); color: var(--ink); }
+.home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--ink); z-index: 4; }
+
+/* ---------- status marks (shared vocabulary) ---------- */
+.tk { width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; border: 2px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; }
+.tk.sm { width: 26px; height: 26px; }
+.tk.hit { background: var(--done) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/55% no-repeat; border-color: var(--done); }
+.tk.short { border-color: var(--done); background: linear-gradient(to top, var(--done) 50%, var(--paper) 50%); }
+.tk.skip { border: 2px dashed var(--soft); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239AA0AC' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M8 8l8 8M16 8l-8 8'/%3E%3C/svg%3E") center/60% no-repeat; }
+.tk.open { border-color: var(--ink); }
+.chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+.chip.hit { background: var(--done); color: #fff; }
+.chip.short { border: 2px solid var(--done); color: var(--done); }
+.chip.skip { border: 2px dashed var(--soft); color: var(--muted); }
+.chev { width: 20px; height: 20px; flex-shrink: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") center/contain no-repeat; }
+
+/* segment bar: one segment per prescribed move */
+.seg { display: flex; gap: 4px; }
+.seg i { flex: 1; height: 10px; border-radius: 3px; border: 2px solid var(--hair); }
+.seg i.h { background: var(--done); border-color: var(--done); }
+.seg i.s { border-color: var(--done); background: linear-gradient(to right, var(--done) 50%, var(--paper) 50%); }
+.seg i.x { border-style: dashed; border-color: var(--soft); }
+.seg i.p { border-color: var(--ink); }
+
+/* ---------- A: month calendar ---------- */
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.cal .wd { text-align: center; font-size: 12px; font-weight: 800; color: var(--muted); padding-bottom: 2px; }
+.cal .d { height: 46px; border-radius: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 15px; font-weight: 800; position: relative; font-variant-numeric: tabular-nums; }
+.cal .d.full { background: var(--done); color: #fff; }
+.cal .d.part { border: 2px solid var(--done); background: linear-gradient(to top, rgba(74,108,245,.28) var(--p), var(--paper) var(--p)); }
+.cal .d.miss { border: 2px solid var(--hair); color: var(--muted); }
+.cal .d.miss::after { content: ""; position: absolute; width: 22px; height: 2px; background: var(--soft); transform: rotate(-35deg); }
+.cal .d.rest { color: var(--muted); font-weight: 600; }
+.cal .d.rest::after { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--soft); }
+.cal .d.today { background: var(--sign); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.cal .d.fut { color: var(--soft); font-weight: 600; }
+.cal .d.sel { outline: 3px solid var(--ink); outline-offset: 2px; }
+.cal .d .fr { font-size: 10px; font-weight: 800; letter-spacing: .02em; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+
+/* ---------- B: week ledger ---------- */
+.ledger { display: flex; flex-direction: column; }
+.lw { display: grid; grid-template-columns: 62px 1fr 44px; align-items: center; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--hair); }
+.lw.now { background: var(--sign); border: 2px solid var(--ink); border-radius: 16px; box-shadow: 5px 5px 0 var(--ink); padding: 12px 10px; margin: 6px 6px 10px 0; }
+.lw .wl { font-size: 13px; font-weight: 800; line-height: 1.2; }
+.lw .wl small { display: block; font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .04em; }
+.lw.now .wl small { color: var(--ink); }
+.lw .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.lw .col { display: flex; flex-direction: column; gap: 3px; align-items: stretch; }
+.lw .col i { height: 8px; border-radius: 2px; border: 1.5px solid var(--hair); }
+.lw .col i.h { background: var(--done); border-color: var(--done); }
+.lw .col i.s { border-color: var(--done); background: linear-gradient(to right, var(--done) 50%, transparent 50%); }
+.lw .col i.x { border-style: dashed; border-color: var(--soft); }
+.lw .col i.p { border-color: var(--ink); background: var(--paper); }
+.lw .col i.f { border-color: transparent; background: rgba(17,24,39,.06); }
+.lw .col.rest { justify-content: center; align-items: center; height: 41px; }
+.lw .col.rest::after { content: ""; width: 10px; height: 2px; background: var(--soft); border-radius: 1px; }
+.lw .tot { text-align: right; font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.lw .tot small { display: block; font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: .06em; }
+.lw.now .tot small { color: var(--ink); }
+
+/* ---------- C: day feed ---------- */
+.strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.strip .s { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--muted); }
+.strip .s b { width: 100%; height: 44px; border-radius: 11px; border: 2px solid var(--hair); display: block; }
+.strip .s b.full { background: var(--done); border-color: var(--done); }
+.strip .s b.part { border-color: var(--done); background: linear-gradient(to top, rgba(74,108,245,.28) var(--p), var(--paper) var(--p)); }
+.strip .s b.today { background: linear-gradient(to top, rgba(17,24,39,.16) var(--p), var(--sign) var(--p)); border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.strip .s b.rest { border: none; background: radial-gradient(circle, var(--soft) 2px, transparent 2.5px); }
+.strip .s.on { color: var(--ink); }
+.feed { display: flex; flex-direction: column; }
+.fd { display: grid; grid-template-columns: 46px 1fr 20px; gap: 14px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--hair); }
+.fd .dt { display: flex; flex-direction: column; align-items: flex-start; line-height: 1; }
+.fd .dt b { font-size: 26px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.fd .dt small { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--muted); padding-top: 4px; }
+.fd .mid { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.fd .mid .t { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; font-weight: 800; }
+.fd .mid .t span:last-child { font-size: 13px; font-weight: 700; color: var(--muted); }
+.fd.restrow { padding: 9px 0; }
+.fd.restrow .dt b { font-size: 18px; color: var(--muted); }
+
+/* ---------- D: matrix ---------- */
+.mx { display: grid; grid-template-columns: 88px repeat(14, 1fr); gap: 5px 3px; align-items: center; }
+.mx .h { font-size: 10px; font-weight: 800; color: var(--muted); text-align: center; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.mx .h.today { color: var(--ink); }
+.mx .h.wk { border-left: 1.5px solid var(--hair); }
+.mx .n { font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mx .c { aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--hair); }
+.mx .c.h { background: var(--done); border-color: var(--done); }
+.mx .c.s { border-color: var(--done); background: linear-gradient(to top, var(--done) 50%, var(--paper) 50%); }
+.mx .c.x { border-style: dashed; border-color: var(--soft); }
+.mx .c.r { border: none; background: radial-gradient(circle, var(--soft) 2px, transparent 2.5px); }
+.mx .c.p { border-color: var(--ink); }
+.mx .c.focus { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink); }
+.mx .tl { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.mx .tc { font-size: 10px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; }
+.mx .tc.full { color: var(--done); }
+.mx .tc.lo { color: var(--muted); }
+.mx .colsel { background: rgba(248,217,102,.55); border-radius: 8px; }
+
+/* ---------- E: goal weeks ---------- */
+.pips { display: flex; gap: 8px; }
+.pips i { width: 100%; height: 14px; border-radius: 5px; border: 2px solid var(--ink); background: var(--paper); }
+.pips i.on { background: var(--ink); }
+.gw { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--hair); }
+.gw .wn { font-size: 16px; font-weight: 800; }
+.gw .wn small { display: block; font-size: 13px; font-weight: 600; color: var(--muted); padding-top: 2px; }
+.gw .dots { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.gw .dots i { height: 8px; border-radius: 4px; background: var(--hair); }
+.gw .dots i.full { background: var(--done); }
+.gw .dots i.part { background: linear-gradient(to right, var(--done) var(--p), var(--hair) var(--p)); }
+.gw .dots i.rest { background: transparent; border: 1.5px dashed var(--hair); }
+
+/* ---------- Detail screens ---------- */
+.pv { display: flex; gap: 14px; align-items: flex-start; padding: 15px 0; border-bottom: 1px solid var(--hair); }
+.pv .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.pv .nm { font-size: 18px; font-weight: 800; letter-spacing: -.01em; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pv .ln { display: grid; grid-template-columns: 38px 1fr; font-size: 14.5px; font-weight: 600; line-height: 1.4; }
+.pv .ln em { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; padding-top: 2px; }
+.pv .ln.plan span { color: var(--muted); }
+.pv .note { font-size: 14px; font-style: italic; font-weight: 500; line-height: 1.4; }
+.under { text-decoration: underline; text-decoration-color: var(--done); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+table.cmp { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.cmp th { text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 0 0 8px; }
+table.cmp td { padding: 12px 6px 12px 0; border-top: 1px solid var(--hair); vertical-align: top; font-weight: 600; font-variant-numeric: tabular-nums; }
+table.cmp td:first-child { font-weight: 800; font-size: 15px; }
+table.cmp td .sub { display: block; font-size: 12px; font-weight: 600; color: var(--muted); padding-top: 2px; }
+table.cmp td.did-short span.v { display: inline-block; border: 2px solid var(--done); border-radius: 8px; padding: 1px 6px; margin-left: -8px; }
+table.cmp td.did-hit { color: var(--done); font-weight: 800; }
+table.cmp td.did-skip { color: var(--muted); }
+table.cmp tr.tot td { border-top: 2px solid var(--ink); font-weight: 800; }
+
+.ex { display: flex; flex-direction: column; gap: 8px; padding: 14px 0; border-bottom: 1px solid var(--hair); }
+.ex .top { display: flex; justify-content: space-between; align-items: center; }
+.ex .top b { font-size: 17px; font-weight: 800; }
+.ex .sets { display: grid; grid-template-columns: 36px 1fr; gap: 6px 8px; align-items: center; }
+.ex .sets em { font-style: normal; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.ex .blocks { display: flex; gap: 6px; }
+.ex .blocks i { font-style: normal; width: 54px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ex .blocks.plan i { border: 2px solid var(--ink); }
+.ex .blocks.did i { background: var(--done); color: #fff; }
+.ex .blocks.did i.part { background: linear-gradient(to right, var(--done) var(--p), rgba(74,108,245,.16) var(--p)); color: var(--ink); border: 2px solid var(--done); }
+.ex .blocks.did i.none { background: none; border: 2px dashed var(--soft); color: var(--muted); }
+.ex .meta { font-size: 13px; font-weight: 600; color: var(--muted); }
+
+.tl { position: relative; display: flex; flex-direction: column; }
+.tl::before { content: ""; position: absolute; left: 61px; top: 8px; bottom: 8px; width: 2px; background: var(--hair); }
+.ti { display: grid; grid-template-columns: 50px 26px 1fr; gap: 0 12px; padding: 10px 0; align-items: start; position: relative; }
+.ti .tm { font-size: 13px; font-weight: 800; text-align: right; padding-top: 4px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.ti .tm.n { color: var(--ink); }
+.ti .tk { background-color: var(--paper); position: relative; z-index: 1; }
+.ti .tk.hit { background-color: var(--done); }
+.ti .tb { display: flex; flex-direction: column; gap: 4px; }
+.ti .tb b { font-size: 16px; font-weight: 800; display: flex; gap: 8px; align-items: center; }
+.ti .tb span { font-size: 14px; font-weight: 600; color: var(--muted); }
+.voice { display: flex; flex-direction: column; gap: 6px; border: 2px solid var(--ink); border-radius: 14px; padding: 10px 12px; margin-top: 4px; }
+.voice .vh { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.voice .play { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; }
+.voice .wave { flex: 1; height: 18px; background: repeating-linear-gradient(to right, var(--ink) 0 2px, transparent 2px 5px); -webkit-mask: linear-gradient(to right, #000 0 100%); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 18' preserveAspectRatio='none'%3E%3Cpath d='M0 7h100v4H0z M5 4h4v10H5z M14 1h4v16h-4z M23 5h4v8h-4z M32 2h4v14h-4z M41 6h4v6h-4z M50 3h4v12h-4z M59 0h4v18h-4z M68 5h4v8h-4z M77 2h4v14h-4z M86 6h4v6h-4z M95 4h4v10h-4z' /%3E%3C/svg%3E"); mask-size: 100% 100%; opacity: .85; }
+.voice q { font-size: 14px; font-weight: 500; font-style: italic; line-height: 1.4; color: var(--ink); }
+
+.dim { position: absolute; inset: 0; background: rgba(17,24,39,.42); z-index: 5; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; top: 404px; background: var(--paper); border-radius: 28px 28px 0 0; z-index: 6; padding: 10px 24px 0; display: flex; flex-direction: column; border-top: 2px solid var(--ink); }
+.grab { width: 40px; height: 5px; border-radius: 3px; background: var(--soft); align-self: center; margin-bottom: 12px; }
+.mini { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--hair); }
+.mini .nm { flex: 1; font-size: 16px; font-weight: 800; }
+.mini .vv { font-size: 13.5px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* closing comparison */
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.cmpcard { background: var(--paper); border: 2px solid var(--ink); border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px; }
+.cmpcard.pick { background: var(--sign); box-shadow: 6px 6px 0 var(--ink); }
+.cmpcard h3 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+.cmpcard p { margin: 0; font-size: 14.5px; line-height: 1.5; }
+.cmpcard ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.55; }
+
+/* ---------- 5B: calendar frozen on top, day panel drops down beneath ---------- */
+.dphone .status { position: relative; z-index: 8; background: var(--paper); }
+.dphone .cal .d { cursor: pointer; }
+.dphone .cal .d.fut { cursor: default; }
+.cal .d.tap::before { content: ""; position: absolute; inset: -8px; border-radius: 16px; border: 3px solid var(--ink); opacity: .35; }
+.cal .d.tap::after { content: ""; position: absolute; width: 26px; height: 26px; border-radius: 50%; background: rgba(17,24,39,.28); }
+.month-sum { margin-top: 22px; padding: 16px 20px; display: flex; flex-direction: column; gap: 4px; }
+.dpanel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: var(--paper); display: flex; flex-direction: column; border-top: 2px solid var(--ink); border-radius: 22px 22px 0 0; box-shadow: 0 -8px 18px -12px rgba(17,24,39,.35); clip-path: inset(0 0 100% 0 round 22px 22px 0 0); transition: top .44s cubic-bezier(.22,1.1,.36,1), clip-path .42s cubic-bezier(.3,.9,.3,1); }
+.dpanel.open { clip-path: inset(-30px 0 0 0 round 22px 22px 0 0); }
+.dpanel.dragging { transition: none; }
+.dpanel .grabzone { flex-shrink: 0; height: 26px; display: flex; align-items: center; justify-content: center; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; }
+.dpanel.dragging .grabzone { cursor: grabbing; }
+.dpanel .grip { width: 44px; height: 5px; border-radius: 3px; background: var(--ink); }
+.dpanel .ps { flex: 1; overflow-y: auto; padding: 0 24px 112px; scrollbar-width: none; }
+.dpanel .ps::-webkit-scrollbar { display: none; }
+.dpanel .body { transition: opacity .16s ease; }
+.dpanel .body.swap { opacity: 0; }
+.dpanel .hrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.dpanel h3 { margin: 2px 0 0; font-size: 26px; font-weight: 800; letter-spacing: -.035em; line-height: 1.05; }
+.dpanel .sumline { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; font-weight: 800; padding: 10px 0 7px; }
+.dpanel .sumline span:last-child { color: var(--muted); }
+.dpanel .hdr { padding-bottom: 12px; border-bottom: 2px solid var(--ink); }
+.rbtn { width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0; margin-top: 2px; }
+.drow { display: grid; grid-template-columns: 26px 1fr; gap: 2px 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--hair); }
+.drow:last-of-type { border-bottom: none; }
+.drow .tk { grid-row: span 2; }
+.drow .nm { font-size: 16px; font-weight: 800; }
+.drow .rx { font-size: 14px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dpanel .rest { font-size: 15px; font-weight: 600; color: var(--muted); padding: 14px 0; line-height: 1.45; }
+.snapmark { position: absolute; left: 6px; z-index: 9; display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); pointer-events: none; }
+.snapmark i { width: 14px; border-top: 2px dashed var(--ink); }
+.livebadge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; background: var(--ink); color: var(--sign); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.spec { background: var(--paper); border: 2px solid var(--ink); border-radius: 18px; padding: 20px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 28px; max-width: 1240px; }
+.spec h4 { margin: 0 0 6px; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.spec p, .spec li { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.spec ul { margin: 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="intro">
+    <span class="kicker">MotionLog · Signage Sprint · History tab storyboard</span>
+    <h1>Did I do my PT?</h1>
+    <p>History becomes an adherence view: across days, did you finish what your PT prescribed, and did you hit the targets? Five bird's-eye overviews, five ways to show a single day, and two edge states. Every screen uses the same sample data: the four-move routine from Today, logged from Oct 18 to today, Mon Nov 9. Sundays are rest days.</p>
+    <div class="keyrow">
+      <span><i class="tk sm hit"></i> Hit: logged at or above the prescription</span>
+      <span><i class="tk sm short"></i> Short: logged, under the target</span>
+      <span><i class="tk sm skip"></i> Skipped: prescribed, never logged</span>
+    </div>
+    <p style="font-size:15px">Two separate questions run through every screen. <b style="color:var(--ink)">Done</b> means every prescribed move was logged that day. <b style="color:var(--ink)">On target</b> means the logged sets, reps or time met the prescription.</p>
+  </header>
+
+  <!-- ================= OVERVIEWS ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>Bird's-eye overviews</h2><p>The History tab's first screen. Each one answers “how have I been doing?” at a different zoom.</p></div>
+    <div class="row">
+
+      <!-- A Month calendar -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">November 2026</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">History.</h1><span class="pill ghost">Month ▾</span></div>
+            <div class="card" style="margin-top:18px; padding:18px 20px; display:flex; align-items:center; justify-content:space-between">
+              <div class="stack" style="gap:5px">
+                <span class="label">So far this month</span>
+                <span style="font-size:26px; font-weight:800; letter-spacing:-.03em" class="num">4 of 6 days done</span>
+                <span style="font-size:14.5px; font-weight:600" class="num">19 of 24 moves · 1 short</span>
+              </div>
+              <div class="num" style="width:72px;height:72px;border-radius:50%;border:2px solid var(--ink);background:conic-gradient(var(--ink) 0 67%, var(--paper) 67% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="width:52px;height:52px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800">67%</span></div>
+            </div>
+            <div class="cal" id="calA" style="margin-top:26px"></div>
+            <div class="legend" style="margin-top:16px">
+              <span><i style="background:var(--done)"></i>Done</span>
+              <span><i style="border:2px solid var(--done); background:linear-gradient(to top, rgba(74,108,245,.28) 50%, #fff 50%)"></i>Partial</span>
+              <span><i style="border:2px solid var(--hair)"></i>Missed</span>
+              <span><i style="background:radial-gradient(circle, var(--soft) 2px, transparent 2.5px)"></i>Rest</span>
+            </div>
+          </div>
+          <nav class="nav"><span>TODAY</span><span class="on">HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>A · Month calendar</b>
+          <small>The classic adherence view. Each day fills with blue in proportion to the moves logged, so a partial day reads at a glance. Tap a day to open it.</small>
+          <div class="pc"><em>Good</em><span>Familiar. Spot gaps and streaks across the month in one look, and room for a month switcher.</span><em>Weak</em><span>Hides which move slipped, and “short” only shows up in the summary line.</span></div>
+        </figcaption>
+      </figure>
+
+      <!-- B Week ledger -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Last 4 weeks</span>
+            <h1 class="display" style="padding-top:6px">History.</h1>
+            <div style="display:grid; grid-template-columns:62px 1fr 44px; gap:10px; padding:20px 10px 8px 0">
+              <span></span>
+              <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:5px; text-align:center; font-size:12px; font-weight:800; color:var(--muted)"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+              <span style="font-size:10px; font-weight:800; color:var(--muted); text-align:right; letter-spacing:.06em; align-self:end">MOVES</span>
+            </div>
+            <div class="rule"></div>
+            <div class="ledger" id="ledgerB"></div>
+            <div style="display:flex; gap:14px; padding-top:16px; font-size:12px; font-weight:700; color:var(--muted); flex-wrap:wrap">
+              <span>Each bar is one move: Bridge, Row, Heel raise, Clamshell</span>
+            </div>
+          </div>
+          <nav class="nav"><span>TODAY</span><span class="on">HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>B · Week ledger</b>
+          <small>Each week is a row, each day a stack of four little bars, one per prescribed move. The current week is the sign. The right column gives the week's tally.</small>
+          <div class="pc"><em>Good</em><span>Shows how much of each day got done, not only whether it did. Week-by-week rhythm matches how PT plans are written (“week 3”).</span><em>Weak</em><span>Dense, and the bars stay unlabeled until you learn the order.</span></div>
+        </figcaption>
+      </figure>
+
+      <!-- C Day feed -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">This week · today in progress</span>
+            <h1 class="display" style="padding-top:6px">History.</h1>
+            <div class="strip" id="stripC" style="margin-top:18px"></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="feed" id="feedC"></div>
+          </div>
+          <nav class="nav"><span>TODAY</span><span class="on">HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>C · Day feed</b>
+          <small>The closest to today's build. The week strip stays on top, now filled by fraction, and the log list becomes one row per day with a segment for each prescribed move.</small>
+          <div class="pc"><em>Good</em><span>Easy to build from the current HistoryView. Every row is one tap target, and short and skipped segments are visible without opening the day.</span><em>Weak</em><span>Weak for scanning a long stretch, since a month means a lot of scrolling.</span></div>
+        </figcaption>
+      </figure>
+
+      <!-- D Exercise matrix -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Last 14 days</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">History.</h1><span class="pill ghost">2 wk ▾</span></div>
+            <div class="card" style="margin-top:18px; padding:16px 20px">
+              <span class="label">Pattern</span>
+              <div style="font-size:23px; font-weight:800; letter-spacing:-.025em; padding-top:4px; line-height:1.15">Clamshell is your most-skipped move.</div>
+              <div style="font-size:14px; font-weight:600; padding-top:6px" class="num">Missed 4 of the last 11 plan days</div>
+            </div>
+            <div class="mx" id="mxD" style="margin-top:24px"></div>
+            <div class="legend" style="margin-top:18px">
+              <span><i style="background:var(--done); border-radius:50%"></i>Hit</span>
+              <span><i style="border:2px solid var(--done); border-radius:50%; background:linear-gradient(to top, var(--done) 50%, #fff 50%)"></i>Short</span>
+              <span><i style="border:2px dashed var(--soft); border-radius:50%"></i>Skipped</span>
+              <span><i style="border:2px solid var(--ink); border-radius:50%"></i>Still to do</span>
+            </div>
+          </div>
+          <nav class="nav"><span>TODAY</span><span class="on">HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>D · Move × day matrix</b>
+          <small>Rows are prescribed moves, columns are days. It is the only overview that answers “which exercise do I keep dropping?”, which is useful to bring to a PT visit. Tap a column to open that day.</small>
+          <div class="pc"><em>Good</em><span>Shows patterns by move, and the generated insight gives the sign real content.</span><em>Weak</em><span>Tight at phone width with 14 days. Breaks down when the routine changes mid-range.</span></div>
+        </figcaption>
+      </figure>
+
+      <!-- E Goal weeks -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Goal · 4 full days a week</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">History.</h1><span class="pill">3 wk streak</span></div>
+            <div class="card" style="margin-top:18px; padding:18px 20px; display:flex; flex-direction:column; gap:12px">
+              <div class="stack" style="gap:5px">
+                <span class="label">This week · Nov 8–14</span>
+                <span style="font-size:26px; font-weight:800; letter-spacing:-.03em">0 of 4 days so far</span>
+                <span style="font-size:14.5px; font-weight:600">Finish 2 more moves today to make it 1.</span>
+              </div>
+              <div class="pips"><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div id="goalE"></div>
+          </div>
+          <nav class="nav"><span>TODAY</span><span class="on">HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>E · Goal-first weeks</b>
+          <small>Leads with the goal (here, 4 full days a week, which the PT or the user would set). Past weeks show as hit or missed, with a thin day bar under each one.</small>
+          <div class="pc"><em>Good</em><span>Motivating, and gives a direct answer to “did I hit my goal?”. The streak gives a reason to come back.</span><em>Weak</em><span>Needs a goal setting that the app doesn't have yet. A blunt weekly verdict can feel punishing after a bad week.</span></div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= DAY DETAIL ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>Day detail</h2><p>All five open the same day, <b style="color:var(--ink)">Wed · Nov 4</b>, because it has all three outcomes: two moves hit, Heel raise short (2 × 8 of 2 × 12), and Clamshell skipped.</p></div>
+    <div class="row">
+
+      <!-- 1 Plan vs did -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>History</div>
+            <span class="eyebrow" style="padding-top:14px">Wed · Nov 4</span>
+            <h1 class="display" style="padding-top:6px">3 of 4 done.</h1>
+            <div class="card" style="margin-top:18px; padding:16px 20px; display:flex; flex-direction:column; gap:10px">
+              <div style="display:flex; justify-content:space-between; align-items:baseline"><span class="label">Prescribed routine</span><span style="font-size:14px; font-weight:800" class="num">2 on target</span></div>
+              <div class="seg"><i class="h"></i><i class="h"></i><i class="s"></i><i class="x" style="border-color:var(--ink); border-style:dashed"></i></div>
+            </div>
+            <div class="rule" style="margin-top:22px"></div>
+            <div class="pv"><i class="tk hit"></i><div class="body"><div class="nm">Bridge <span class="chip hit">Hit</span></div><div class="ln plan"><em>Plan</em><span>3 × 45 sec</span></div><div class="ln"><em>Did</em><span>3 × 45 sec · 8:02 AM</span></div></div></div>
+            <div class="pv"><i class="tk hit"></i><div class="body"><div class="nm">Standing row <span class="chip hit">Hit</span></div><div class="ln plan"><em>Plan</em><span>3 × 10 · Red band</span></div><div class="ln"><em>Did</em><span>3 × 10 · Red band · 8:09 AM</span></div></div></div>
+            <div class="pv"><i class="tk short"></i><div class="body"><div class="nm">Heel raise <span class="chip short">Short</span></div><div class="ln plan"><em>Plan</em><span>2 × 12</span></div><div class="ln"><em>Did</em><span>2 × <span class="under">8</span> · Pain 4/10</span></div><div class="note">“Left calf tight, stopped early.”</div></div></div>
+            <div class="pv"><i class="tk skip"></i><div class="body"><div class="nm" style="color:var(--muted)">Clamshell <span class="chip skip">Skipped</span></div><div class="ln plan"><em>Plan</em><span>2 × 10 · Green band</span></div></div></div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>1 · Plan vs. did checklist</b>
+          <small>Same rows as Today, with the prescription and the actual result stacked as Plan and Did. The shortfall number is underlined, and notes stay inline.</small>
+          <div class="pc"><em>Good</em><span>Feels like the Today screen after the fact, so there's nothing new to learn. Reads well with VoiceOver.</span><em>Weak</em><span>Tall rows, so a 7-move routine scrolls.</span></div>
+        </figcaption>
+      </figure>
+
+      <!-- 2 Comparison table -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>History</div>
+            <div class="topbar" style="padding-top:14px"><span class="eyebrow">Wed · Nov 4</span><span style="display:flex; gap:6px"><span class="pill ghost" style="width:38px; padding:0">‹</span><span class="pill ghost" style="width:38px; padding:0">›</span></span></div>
+            <h1 class="display" style="padding-top:4px">Plan vs. did.</h1>
+            <div class="rule" style="margin-top:20px"></div>
+            <table class="cmp" style="margin-top:14px">
+              <tr><th style="width:38%">Move</th><th>Plan</th><th>Did</th></tr>
+              <tr><td>Bridge</td><td>3 × 45s</td><td class="did-hit">3 × 45s ✓</td></tr>
+              <tr><td>Standing row<span class="sub">Red band</span></td><td>3 × 10</td><td class="did-hit">3 × 10 ✓</td></tr>
+              <tr><td>Heel raise</td><td>2 × 12</td><td class="did-short"><span class="v">2 × 8</span><span class="sub">−8 reps</span></td></tr>
+              <tr><td style="color:var(--muted)">Clamshell<span class="sub">Green band</span></td><td>2 × 10</td><td class="did-skip">—</td></tr>
+              <tr class="tot"><td>Total reps<span class="sub">Holds not counted</span></td><td>74</td><td class="num">46 <span style="color:var(--muted); font-weight:700">· 62%</span></td></tr>
+            </table>
+            <div class="card" style="margin-top:22px; padding:14px 18px; display:flex; flex-direction:column; gap:8px">
+              <span class="label">Notes from this day</span>
+              <div style="font-size:14.5px; font-weight:600; line-height:1.45"><b>Heel raise ·</b> Pain 4/10. “Left calf tight, stopped early.”</div>
+              <div style="font-size:14.5px; font-weight:600; line-height:1.45"><b>Standing row ·</b> 🎙 “Felt easy, maybe ready for blue.”</div>
+            </div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>2 · Comparison table</b>
+          <small>A compact table with Plan and Did columns. Only the cell that missed its target gets a box and a delta. Notes collect in one sign below. The arrows step to the previous or next day without going back.</small>
+          <div class="pc"><em>Good</em><span>Densest. Fits a long routine on one screen and reads like a printout to share with a PT.</span><em>Weak</em><span>Feels clinical. The total-reps math mixes timed holds and reps, so the total would need rules.</span></div>
+        </figcaption>
+      </figure>
+
+      <!-- 3 Set blocks -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>History</div>
+            <span class="eyebrow" style="padding-top:14px">Wed · Nov 4 · 3 of 4 done</span>
+            <h1 class="display" style="padding-top:6px; font-size:40px">Set by set.</h1>
+            <div class="rule" style="margin-top:18px"></div>
+            <div class="ex">
+              <div class="top"><b>Bridge</b><span class="chip hit">Hit</span></div>
+              <div class="sets"><em>Plan</em><div class="blocks plan"><i>45s</i><i>45s</i><i>45s</i></div><em>Did</em><div class="blocks did"><i>45s</i><i>45s</i><i>45s</i></div></div>
+            </div>
+            <div class="ex">
+              <div class="top"><b>Standing row</b><span class="chip hit">Hit</span></div>
+              <div class="sets"><em>Plan</em><div class="blocks plan"><i>10</i><i>10</i><i>10</i></div><em>Did</em><div class="blocks did"><i>10</i><i>10</i><i>10</i></div></div>
+              <span class="meta">Red band · 8:09 AM · 🎙 voice note</span>
+            </div>
+            <div class="ex">
+              <div class="top"><b>Heel raise</b><span class="chip short">Short</span></div>
+              <div class="sets"><em>Plan</em><div class="blocks plan"><i>12</i><i>12</i></div><em>Did</em><div class="blocks did"><i class="part" style="--p:67%">8</i><i class="part" style="--p:67%">8</i></div></div>
+              <span class="meta">Pain 4/10 · “Left calf tight, stopped early.”</span>
+            </div>
+            <div class="ex" style="border-bottom:none">
+              <div class="top"><b style="color:var(--muted)">Clamshell</b><span class="chip skip">Skipped</span></div>
+              <div class="sets"><em>Plan</em><div class="blocks plan"><i>10</i><i>10</i></div><em>Did</em><div class="blocks did"><i class="none">–</i><i class="none">–</i></div></div>
+            </div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>3 · Set blocks</b>
+          <small>Each set is a block: outlined for the plan, filled for what was done. A short set fills only part of its block. This is the most literal way to see how much was missed.</small>
+          <div class="pc"><em>Good</em><span>Very visual, with no reading needed to see the shortfall. Scales to timed holds.</span><em>Weak</em><span>ExerciseLog stores one sets × reps value, so uneven sets (10, 10, 7) need per-set data that the app doesn't have yet.</span></div>
+        </figcaption>
+      </figure>
+
+      <!-- 4 Timeline -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>History</div>
+            <span class="eyebrow" style="padding-top:14px">Wed · Nov 4</span>
+            <h1 class="display" style="padding-top:6px">Your day.</h1>
+            <div class="seg" style="margin-top:16px"><i class="h"></i><i class="h"></i><i class="s"></i><i class="x"></i></div>
+            <div style="font-size:14px; font-weight:700; color:var(--muted); padding-top:8px">3 of 4 done · 2 on target · one session, 13 min</div>
+            <div class="rule" style="margin-top:18px"></div>
+            <div class="tl" style="padding-top:8px">
+              <div class="ti"><span class="tm n">8:02</span><i class="tk sm hit"></i><div class="tb"><b>Bridge</b><span>3 × 45 sec</span></div></div>
+              <div class="ti"><span class="tm n">8:09</span><i class="tk sm hit"></i><div class="tb"><b>Standing row</b><span>3 × 10 · Red band</span>
+                <div class="voice"><div class="vh"><span class="play"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z" fill="#F8D966"/></svg></span><span class="wave"></span><span class="num">0:06</span></div><q>Felt easy, maybe ready for blue.</q></div>
+              </div></div>
+              <div class="ti"><span class="tm n">8:15</span><i class="tk sm short"></i><div class="tb"><b>Heel raise <span class="chip short">4 short / set</span></b><span>2 × 8 of 2 × 12 · Pain 4/10</span></div></div>
+              <div class="ti"><span class="tm">—</span><i class="tk sm skip"></i><div class="tb"><b style="color:var(--muted)">Clamshell</b><span>Not logged · 2 × 10 Green band</span></div></div>
+            </div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>4 · Timeline</b>
+          <small>The day in time order, so split sessions (morning and evening) are obvious. Voice notes play inline. Skipped moves sit at the end with no time.</small>
+          <div class="pc"><em>Good</em><span>Gives the recorded voice notes a real home, and shows when and how long you exercised.</span><em>Weak</em><span>Order follows the clock, not the prescription, so plan-vs-did is less direct.</span></div>
+        </figcaption>
+      </figure>
+
+      <!-- 5 Bottom sheet -->
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">November 2026</span>
+            <h1 class="display" style="padding-top:6px">History.</h1>
+            <div class="cal" id="calSheet" style="margin-top:22px"></div>
+          </div>
+          <div class="dim" style="top:auto; height:440px"></div>
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="topbar"><div class="stack" style="gap:4px"><span class="eyebrow" style="font-size:13px">Wed · Nov 4</span><span style="font-size:26px; font-weight:800; letter-spacing:-.03em">3 of 4 done</span></div><span class="pill">2 on target</span></div>
+            <div class="rule" style="margin-top:14px"></div>
+            <div class="mini"><i class="tk sm hit"></i><span class="nm">Bridge</span><span class="vv">3 × 45s</span></div>
+            <div class="mini"><i class="tk sm hit"></i><span class="nm">Standing row</span><span class="vv">3 × 10</span></div>
+            <div class="mini"><i class="tk sm short"></i><span class="nm">Heel raise</span><span class="vv"><b style="color:var(--done)">8</b> of 12 × 2</span></div>
+            <div class="mini" style="border-bottom:none"><i class="tk sm skip"></i><span class="nm" style="color:var(--muted)">Clamshell</span><span class="vv">Skipped</span></div>
+            <div style="padding-top:14px"><div class="btn ghost" style="height:52px">Open full day</div></div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>5 · Peek sheet over the overview</b>
+          <small>A navigation pattern rather than a layout. Tapping a day raises a half sheet with the summary, and the calendar stays visible above it, so you can tap through days quickly. “Open full day” pushes any of layouts 1–4. 5B flips it: the calendar stays put and the day drops down beneath it.</small>
+          <div class="pc"><em>Good</em><span>Fast to scan day after day, and the calendar context never goes away.</span><em>Weak</em><span>Two levels of detail to design and keep in sync.</span></div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ================= 5B DROP-DOWN PANEL ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>5B · Calendar on top, day drops down</h2><p>The calendar stays frozen at the top. Tapping a day drops a panel out from under the calendar to fill the lower half. The day's header scrolls with the list. Dragging the grab strip up raises the panel to 75% of the screen height to show more of the day.</p></div>
+    <div class="row">
+      <figure>
+        <div class="phone dphone" id="dp1"></div>
+        <figcaption><b>5B·1 · Tap a day</b><small>Closed state: the calendar, with the month summary in the lower half. A tap on Wed Nov 4 drops the panel. Future days don't respond.</small></figcaption>
+      </figure>
+      <figure>
+        <div class="phone dphone" id="dp2"></div>
+        <figcaption><b>5B·2 · Dropped, half height</b><small>The panel unrolls from under the calendar's edge. Each row shows only the status icon, the move, and its prescription: sets × reps or time, plus the band. The ✕ is smaller and sits beside the title.</small></figcaption>
+      </figure>
+      <figure>
+        <div class="phone dphone" id="dp3"></div>
+        <figcaption><b>5B·3 · Scrolled</b><small>The date, title and bar scroll away with the list, so the whole lower half is free for moves. Only the grab strip stays fixed at the top of the panel.</small></figcaption>
+      </figure>
+      <figure>
+        <div class="phone dphone" id="dp4"></div>
+        <figcaption><b>5B·4 · Dragged up to 75%</b><small>Pulling the grab strip up snaps the panel to 75% of the screen height. It covers most of the calendar, which stays in place underneath. Dragging back down returns to half height.</small></figcaption>
+      </figure>
+      <figure>
+        <div class="phone dphone" id="dpLive"></div>
+        <figcaption><span style="display:flex; gap:10px; align-items:center"><b>Try it</b><span class="livebadge">Live</span></span><small>Click any day up to today. Drag the grab strip up to 75% and back down. Drag it down from half height to dismiss, or use ✕, Esc, or tap the selected day again.</small></figcaption>
+      </figure>
+    </div>
+    <div class="spec">
+      <div><h4>Open &amp; switch</h4><ul><li>Tap a past day or today. The panel unrolls downward from the calendar's edge, about 0.45 s.</li><li>At half height, tapping another day crossfades the contents in place.</li></ul></div>
+      <div><h4>Heights</h4><ul><li>Two snap points: half (just under the calendar) and 75% of the screen.</li><li>Drag the grab strip up more than about 50 pt, or flick up, to reach 75%. Drag down to return to half.</li><li>The header and list scroll together. Only the grab strip takes the drag.</li></ul></div>
+      <div><h4>Close</h4><ul><li>✕ beside the title, tapping the selected day again, or Esc.</li><li>Drag the grab strip down from half height. The panel rolls back up under the calendar.</li><li>VoiceOver: the ✕ button plus the two-finger scrub (escape) gesture.</li></ul></div>
+      <div><h4>Row content</h4><ul><li>Status icon, move name, and the prescription only (sets × reps or time, plus band or weight).</li><li>No outcome labels, no logged values, no notes or voice notes.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- ================= EDGE STATES ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>Edge states</h2><p>Days with no logs, and the day that isn't over yet.</p></div>
+    <div class="row">
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>History</div>
+            <span class="eyebrow" style="padding-top:14px">Thu · Nov 5</span>
+            <h1 class="display" style="padding-top:6px">Nothing logged.</h1>
+            <p style="margin:12px 0 0; font-size:16px; line-height:1.5; color:var(--muted)">Your plan had four moves this day. If you did them and forgot to log, add them now.</p>
+            <div class="rule" style="margin-top:22px"></div>
+            <div class="pv"><i class="tk skip"></i><div class="body"><div class="nm" style="color:var(--muted)">Bridge</div><div class="ln plan"><em>Plan</em><span>3 × 45 sec</span></div></div></div>
+            <div class="pv"><i class="tk skip"></i><div class="body"><div class="nm" style="color:var(--muted)">Standing row</div><div class="ln plan"><em>Plan</em><span>3 × 10 · Red band</span></div></div></div>
+            <div class="pv"><i class="tk skip"></i><div class="body"><div class="nm" style="color:var(--muted)">Heel raise</div><div class="ln plan"><em>Plan</em><span>2 × 12</span></div></div></div>
+            <div class="pv"><i class="tk skip"></i><div class="body"><div class="nm" style="color:var(--muted)">Clamshell</div><div class="ln plan"><em>Plan</em><span>2 × 10 · Green band</span></div></div></div>
+            <div style="padding-top:22px"><div class="btn">Log for Nov 5</div></div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>Missed day</b>
+          <small>Neutral wording, not a scolding. Shows what was prescribed and offers a late log. Back-dating needs a date picker in the log flow, which is open for decision.</small>
+        </figcaption>
+      </figure>
+
+      <figure>
+        <div class="phone">
+          <div class="status"></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>History</div>
+            <span class="eyebrow" style="padding-top:14px">Today · Mon Nov 9</span>
+            <h1 class="display" style="padding-top:6px">2 of 4, so far.</h1>
+            <div class="seg" style="margin-top:16px"><i class="h"></i><i class="h"></i><i class="p"></i><i class="p"></i></div>
+            <div class="rule" style="margin-top:22px"></div>
+            <div class="pv"><i class="tk hit"></i><div class="body"><div class="nm">Bridge <span class="chip hit">Hit</span></div><div class="ln"><em>Did</em><span>3 × 45 sec · 7:48 AM</span></div></div></div>
+            <div class="pv"><i class="tk hit"></i><div class="body"><div class="nm">Standing row <span class="chip hit">Hit</span></div><div class="ln"><em>Did</em><span>3 × 10 · Blue band · 7:55 AM</span></div></div></div>
+            <div class="pv"><i class="tk open"></i><div class="body"><div class="nm">Heel raise</div><div class="ln plan"><em>Plan</em><span>2 × 12</span></div></div></div>
+            <div class="pv"><i class="tk open"></i><div class="body"><div class="nm">Clamshell</div><div class="ln plan"><em>Plan</em><span>2 × 10 · Green band</span></div></div></div>
+            <div style="padding-top:22px"><div class="btn">Finish on Today</div></div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption>
+          <b>Today, in progress</b>
+          <small>Unlogged moves use the open ink ring from Today, not the dashed “skipped” mark, because the day isn't over. The sign sends you back to Today. A day only counts as missed after midnight.</small>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= PAIRING ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>How they could combine</h2><p>The overviews and detail layouts are independent, so any pair works. Three that fit together well:</p></div>
+    <div class="compare">
+      <div class="cmpcard pick">
+        <span class="label">Suggested starting point</span>
+        <h3>A calendar + 5 peek sheet + 1 checklist</h3>
+        <p>The calendar answers “am I keeping up?”. The sheet answers “what happened that day?” without losing your place. The checklist is the full record and reuses Today's rows.</p>
+      </div>
+      <div class="cmpcard">
+        <span class="label">Closest to the current build</span>
+        <h3>C day feed + 1 checklist</h3>
+        <p>Smallest change from today's HistoryView: the strip gets fractions, rows become days, and the detail is the Today list with Plan and Did lines.</p>
+      </div>
+      <div class="cmpcard">
+        <span class="label">For PT check-ins</span>
+        <h3>D matrix + 2 table</h3>
+        <p>Best for spotting which move keeps slipping and for showing your PT a clean record. Could live behind a “By move” toggle on top of A or C.</p>
+      </div>
+    </div>
+    <div class="cmpcard" style="max-width:820px">
+      <h3>Open questions</h3>
+      <ul>
+        <li>Does a day count as <b>done</b> once every move is logged, or only when all are on target? The screens keep these as two separate measures.</li>
+        <li>Where does a goal come from? E assumes a weekly target that the PT or the user sets.</li>
+        <li>History needs the routine as it was on each date. When the PT changes the plan, past days should still show the old prescription.</li>
+        <li>Per-set logging (layout 3) and back-dated logs (missed day) both need changes to the data model.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+// Sample data. Codes per prescribed move [Bridge, Standing row, Heel raise, Clamshell]:
+// h = hit, s = short, x = skipped, p = still to do (today). "R" = rest day, "F" = future.
+const DAYS = {
+  "10-18":"R","10-19":"hhhh","10-20":"hhhh","10-21":"hhxx","10-22":"hhhh","10-23":"hhsh","10-24":"hhhx",
+  "10-25":"R","10-26":"hhhh","10-27":"hxxx","10-28":"hhhh","10-29":"hhhh","10-30":"xxxx","10-31":"hhhh",
+  "11-01":"R","11-02":"hhhh","11-03":"hhhh","11-04":"hhsx","11-05":"xxxx","11-06":"hhhh","11-07":"hhhh",
+  "11-08":"R","11-09":"hhpp"
+};
+const TODAY = "11-09";
+const key = (m, d) => `${m}-${String(d).padStart(2, "0")}`;
+const code = k => DAYS[k] ?? "F";
+const logged = c => [...c].filter(x => x === "h" || x === "s").length;
+function dayState(k) {
+  const c = code(k);
+  if (k === TODAY) return "today";
+  if (c === "R") return "rest";
+  if (c === "F") return "fut";
+  const n = logged(c);
+  return n === 4 ? "full" : n === 0 ? "miss" : "part";
+}
+
+// status bars
+const STATUS = `<span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg>`;
+document.querySelectorAll(".status").forEach(s => s.innerHTML = STATUS);
+
+// A + sheet: November calendar (Nov 1 2026 is a Sunday)
+function renderCal(el, selected) {
+  let h = ["S","M","T","W","T","F","S"].map(d => `<span class="wd">${d}</span>`).join("");
+  for (let d = 1; d <= 30; d++) {
+    const k = key(11, d), st = dayState(k), c = code(k);
+    const p = st === "part" ? `style="--p:${logged(c) * 25}%"` : "";
+    const fr = st === "part" ? `<span class="fr">${logged(c)}/4</span>` : "";
+    h += `<span class="d ${st}${k === selected ? " sel" : ""}" ${p}>${d}${fr}</span>`;
+  }
+  el.innerHTML = h;
+}
+renderCal(document.getElementById("calA"));
+renderCal(document.getElementById("calSheet"), "11-04");
+
+// B: week ledger, newest first
+const weeks = [
+  { m: 11, start: 8, label: "Nov 8", sub: "THIS WK", now: true },
+  { m: 11, start: 1, label: "Nov 1", sub: "WK 3" },
+  { m: 10, start: 25, label: "Oct 25", sub: "WK 2" },
+  { m: 10, start: 18, label: "Oct 18", sub: "WK 1" },
+];
+function weekKeys(w) {
+  const out = [];
+  for (let i = 0; i < 7; i++) {
+    let m = w.m, d = w.start + i;
+    if (m === 10 && d > 31) { m = 11; d -= 31; }
+    out.push(key(m, d));
+  }
+  return out;
+}
+document.getElementById("ledgerB").innerHTML = weeks.map(w => {
+  const ks = weekKeys(w);
+  let done = 0, plan = 0;
+  const cols = ks.map(k => {
+    const c = code(k);
+    if (c === "R") return `<span class="col rest"></span>`;
+    if (c === "F") return `<span class="col">${"<i class='f'></i>".repeat(4)}</span>`;
+    plan += 4; done += logged(c);
+    return `<span class="col">${[...c].map(x => `<i class="${x}"></i>`).join("")}</span>`;
+  }).join("");
+  return `<div class="lw${w.now ? " now" : ""}"><span class="wl">${w.label}<small>${w.sub}</small></span><div class="days">${cols}</div><span class="tot num">${done}/${plan}<small>MOVES</small></span></div>`;
+}).join("");
+
+// C: strip (this week) + feed
+const thisWeek = weekKeys(weeks[0]);
+document.getElementById("stripC").innerHTML = thisWeek.map((k, i) => {
+  const st = dayState(k), c = code(k);
+  const p = (st === "part" || st === "today") ? `style="--p:${logged(c) * 25}%"` : "";
+  const cls = st === "fut" || st === "miss" ? "" : st;
+  return `<span class="s${k === TODAY ? " on" : ""}">${"SMTWTFS"[i]}<b class="${cls}" ${p}></b></span>`;
+}).join("");
+const feedDays = [["11-09","MON"],["11-08","SUN"],["11-07","SAT"],["11-06","FRI"],["11-05","THU"],["11-04","WED"],["11-03","TUE"]];
+document.getElementById("feedC").innerHTML = feedDays.map(([k, wd]) => {
+  const c = code(k), d = +k.slice(3);
+  if (c === "R") return `<div class="fd restrow"><span class="dt"><b>${String(d).padStart(2,"0")}</b></span><span style="font-size:14px;font-weight:700;color:var(--muted)">${wd === "SUN" ? "Sunday" : wd} · Rest day</span><span></span></div>`;
+  const n = logged(c), shorts = [...c].filter(x => x === "s").length;
+  const title = k === TODAY ? `In progress` : n === 4 ? "All done" : n === 0 ? "Missed" : `${n} of 4 done`;
+  const right = k === TODAY ? `${n}/4` : shorts ? `${n}/4 · ${shorts} short` : `${n}/4`;
+  return `<div class="fd"><span class="dt"><b>${String(d).padStart(2,"0")}</b><small>${wd}</small></span><span class="mid"><span class="t"><span>${title}</span><span>${right}</span></span><span class="seg">${[...c].map(x => `<i class="${x}"></i>`).join("")}</span></span><i class="chev"></i></div>`;
+}).join("");
+
+// D: matrix, Oct 27 – Nov 9
+const mxKeys = [];
+for (let d = 27; d <= 31; d++) mxKeys.push(key(10, d));
+for (let d = 1; d <= 9; d++) mxKeys.push(key(11, d));
+const moves = ["Bridge", "Standing row", "Heel raise", "Clamshell"];
+let mx = `<span></span>` + mxKeys.map(k => {
+  const d = +k.slice(3), wd = "SMTWTFS"[(new Date(2026, +k.slice(0,2) - 1, d)).getDay()];
+  return `<span class="h${k === TODAY ? " today" : ""}${wd === "S" && k !== mxKeys[0] && (new Date(2026, +k.slice(0,2)-1, d)).getDay() === 0 ? " wk" : ""}">${wd}<br>${d}</span>`;
+}).join("");
+moves.forEach((mv, i) => {
+  mx += `<span class="n"${i === 3 ? ' style="text-decoration:underline; text-decoration-color:var(--sign); text-decoration-thickness:4px; text-underline-offset:3px"' : ""}>${mv}</span>`;
+  mx += mxKeys.map(k => {
+    const c = code(k);
+    const cls = c === "R" ? "r" : c[i];
+    return `<span class="c ${cls}"></span>`;
+  }).join("");
+});
+mx += `<span class="tl" style="padding-top:6px">Day</span>` + mxKeys.map(k => {
+  const c = code(k);
+  if (c === "R") return `<span class="tc lo" style="padding-top:6px">–</span>`;
+  const n = logged(c);
+  return `<span class="tc ${n === 4 ? "full" : "lo"}" style="padding-top:6px">${n}</span>`;
+}).join("");
+document.getElementById("mxD").innerHTML = mx;
+
+// E: goal weeks
+const goal = 4;
+document.getElementById("goalE").innerHTML = weeks.slice(1).map(w => {
+  const ks = weekKeys(w);
+  const full = ks.filter(k => dayState(k) === "full").length;
+  const hit = full >= goal;
+  const dots = ks.map(k => {
+    const st = dayState(k), c = code(k);
+    if (st === "rest") return `<i class="rest"></i>`;
+    if (st === "full") return `<i class="full"></i>`;
+    if (st === "part") return `<i class="part" style="--p:${logged(c) * 25}%"></i>`;
+    return `<i></i>`;
+  }).join("");
+  const end = w.m === 10 && w.start === 25 ? "Oct 31" : `${w.m === 10 ? "Oct" : "Nov"} ${w.start + 6}`;
+  return `<div class="gw"><span class="wn">${w.label} – ${end}<small>${full} full days · ${w.sub.toLowerCase().replace("wk", "Week")}</small></span><span class="chip ${hit ? "hit" : "skip"}">${hit ? "Goal hit" : "Missed"}</span><span class="dots">${dots}</span></div>`;
+}).join("") + `<div style="padding-top:14px; font-size:13px; font-weight:700; color:var(--muted)">Week 1 began Oct 18 with your current plan.</div>`;
+// ---------- 5B: calendar frozen on top, day panel drops down ----------
+const PLAN = [["Bridge","3 × 45 sec"],["Standing row","3 × 10 · Red band"],["Heel raise","2 × 12"],["Clamshell","2 × 10 · Green band"]];
+const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const svgX = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F8D966" stroke-width="3.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
+const FULL_TOP = Math.round(844 * 0.25);
+
+function panelContent(k) {
+  const c = code(k), d = +k.slice(3);
+  const dateLine = `${k === TODAY ? "Today · " : ""}${WD[new Date(2026, 10, d).getDay()]} · Nov ${d}`;
+  if (c === "R") return { dateLine, title: "Rest day.", sum: "", rows: `<div class="rest">Nothing was prescribed on Sundays. Rest days don't count against you.</div>` };
+  const n = logged(c), hits = [...c].filter(x => x === "h").length;
+  const title = k === TODAY ? `${n} of 4, so far.` : n === 4 ? "All 4 done." : n === 0 ? "Nothing logged." : `${n} of 4 done.`;
+  const tk = { h: "hit", s: "short", x: "skip", p: "open" };
+  const rows = [...c].map((x, i) => `<div class="drow"><i class="tk sm ${tk[x]}"></i><span class="nm"${x === "x" ? ' style="color:var(--muted)"' : ""}>${PLAN[i][0]}</span><span class="rx">${PLAN[i][1]}</span></div>`).join("");
+  const sum = `<div class="sumline"><span>${k === TODAY ? "In progress" : hits + " on target"}</span><span>${n}/4 logged</span></div><div class="seg">${[...c].map(x => `<i class="${x}"></i>`).join("")}</div>`;
+  return { dateLine, title, sum, rows };
+}
+
+function dropPhoneHTML() {
+  return `<div class="status">${STATUS}</div>
+    <div class="screen" style="padding-top:22px">
+      <span class="eyebrow">November 2026</span>
+      <h1 class="display" style="padding-top:6px">History.</h1>
+      <div class="cal" style="margin-top:22px"></div>
+      <div class="card month-sum">
+        <span class="label">So far this month</span>
+        <span style="font-size:24px; font-weight:800; letter-spacing:-.03em" class="num">4 of 6 days done</span>
+        <span style="font-size:14px; font-weight:600" class="num">19 of 24 moves · 1 short · tap a day for details</span>
+      </div>
+    </div>
+    <div class="dpanel" role="region" aria-label="Day details">
+      <div class="grabzone" aria-label="Resize day details"><div class="grip"></div></div>
+      <div class="ps"><div class="body">
+        <div class="hdr"><div class="hrow"><div class="stack"><span class="eyebrow dl" style="font-size:12.5px"></span><h3 class="tt"></h3></div><button class="rbtn x" aria-label="Close">${svgX}</button></div><div class="sm"></div></div>
+        <div class="rows"></div>
+      </div></div>
+    </div>
+    <nav class="nav"><span>TODAY</span><span class="on">HISTORY</span><span>PROFILE</span></nav>
+    <div class="home-ind"></div>`;
+}
+
+function makeDrop(el) {
+  el.innerHTML = dropPhoneHTML();
+  const cal = el.querySelector(".cal"), panel = el.querySelector(".dpanel");
+  const api = { k: null, state: "closed", el, panel };
+  api.halfTop = () => cal.offsetTop + cal.offsetHeight + 14;
+  api.topFor = st => st === "full" ? FULL_TOP : api.halfTop();
+  api.renderCal = (extra = {}) => {
+    let h = ["S","M","T","W","T","F","S"].map(d => `<span class="wd">${d}</span>`).join("");
+    for (let d = 1; d <= 30; d++) {
+      const k = key(11, d), st = dayState(k), c = code(k);
+      const p = st === "part" ? `style="--p:${logged(c) * 25}%"` : "";
+      const fr = st === "part" ? `<span class="fr">${logged(c)}/4</span>` : "";
+      const cls = [st, api.state !== "closed" && api.k === k ? "sel" : "", extra.tap === k ? "tap" : ""].join(" ");
+      h += `<span class="d ${cls}" data-k="${k}" ${p}>${d}${fr}</span>`;
+    }
+    cal.innerHTML = h;
+  };
+  api.fill = k => {
+    const b = panelContent(k);
+    panel.querySelector(".dl").textContent = b.dateLine;
+    panel.querySelector(".tt").textContent = b.title;
+    panel.querySelector(".sm").innerHTML = b.sum;
+    panel.querySelector(".rows").innerHTML = b.rows;
+    panel.querySelector(".ps").scrollTop = 0;
+  };
+  api.layout = () => {
+    panel.classList.toggle("open", api.state !== "closed");
+    if (api.state !== "closed") panel.style.top = api.topFor(api.state) + "px";
+    api.renderCal();
+  };
+  api.show = k => {
+    const wasOpen = api.state !== "closed"; api.k = k;
+    if (wasOpen) {
+      const body = panel.querySelector(".body"); body.classList.add("swap");
+      setTimeout(() => { api.fill(k); body.classList.remove("swap"); }, 140);
+    } else { api.fill(k); api.state = "half"; panel.style.transition = "none"; panel.style.top = api.halfTop() + "px"; panel.offsetHeight; panel.style.transition = ""; }
+    api.layout();
+  };
+  api.close = () => {
+    api.state = "closed"; api.layout();
+    setTimeout(() => { if (api.state === "closed") { panel.style.transition = "none"; panel.style.top = api.halfTop() + "px"; panel.offsetHeight; panel.style.transition = ""; } }, 450);
+  };
+  api.renderCal(); panel.style.top = api.halfTop() + "px";
+  return api;
+}
+
+const f1 = makeDrop(document.getElementById("dp1")); f1.renderCal({ tap: "11-04" });
+const f2 = makeDrop(document.getElementById("dp2"));
+const f3 = makeDrop(document.getElementById("dp3"));
+const f4 = makeDrop(document.getElementById("dp4"));
+function staticFrames() {
+  [f2, f3, f4].forEach(f => { f.panel.style.transition = "none"; f.k = "11-04"; f.fill("11-04"); });
+  f2.state = "half"; f2.layout();
+  f3.state = "half"; f3.layout(); f3.panel.querySelector(".ps").scrollTop = 140;
+  f4.state = "full"; f4.layout();
+}
+staticFrames();
+
+// live prototype
+const live = makeDrop(document.getElementById("dpLive"));
+const playable = k => code(k) !== "F";
+live.el.querySelector(".cal").addEventListener("click", e => {
+  const c = e.target.closest(".d"); if (!c) return;
+  const k = c.dataset.k; if (!playable(k)) return;
+  if (live.state !== "closed" && live.k === k) live.close(); else live.show(k);
+});
+live.panel.querySelector(".x").addEventListener("click", () => live.close());
+document.addEventListener("keydown", e => { if (e.key === "Escape" && live.state !== "closed") live.close(); });
+
+let drag = null;
+const grab = live.panel.querySelector(".grabzone");
+grab.addEventListener("pointerdown", e => {
+  if (live.state === "closed") return;
+  drag = { y0: e.clientY, pts: [[e.clientY, e.timeStamp]], dy: 0, base: live.topFor(live.state), z: live.el.getBoundingClientRect().height / 844 };
+  grab.setPointerCapture(e.pointerId);
+  live.panel.classList.add("dragging");
+});
+grab.addEventListener("pointermove", e => {
+  if (!drag) return;
+  const dy = (e.clientY - drag.y0) / (drag.z || 1); drag.dy = dy;
+  drag.pts.push([e.clientY / (drag.z || 1), e.timeStamp]); if (drag.pts.length > 5) drag.pts.shift();
+  let top = drag.base + dy;
+  if (top < FULL_TOP) top = FULL_TOP - (FULL_TOP - top) * 0.2; // rubber band past 75%
+  live.panel.style.top = top + "px";
+});
+function endDrag() {
+  if (!drag) return;
+  const a = drag.pts[0], b = drag.pts[drag.pts.length - 1];
+  const v = (b[0] - a[0]) / Math.max(1, b[1] - a[1]); // px/ms, negative = upward
+  const dy = drag.dy; drag = null;
+  live.panel.classList.remove("dragging");
+  if (live.state === "half") {
+    if (dy < -50 || v < -0.4) live.state = "full";
+    else if (dy > 70 || v > 0.5) return live.close();
+  } else if (live.state === "full") {
+    if (dy > live.halfTop() - FULL_TOP + 70) return live.close();
+    if (dy > 50 || v > 0.4) live.state = "half";
+  }
+  live.layout();
+}
+grab.addEventListener("pointerup", endDrag);
+grab.addEventListener("pointercancel", endDrag);
+
+document.fonts && document.fonts.ready.then(() => { staticFrames(); if (live.state !== "closed") live.layout(); else live.panel.style.top = live.halfTop() + "px"; });
+</script>
+</body>
+</html>
