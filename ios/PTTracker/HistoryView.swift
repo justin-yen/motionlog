@@ -9,8 +9,51 @@ enum AdherenceStatus: Equatable {
 struct HistoryExerciseSnapshot: Identifiable, Equatable {
     let item: RoutineItem
     let status: AdherenceStatus
+    let result: HistoryExerciseResult?
 
     var id: UUID { item.id }
+}
+
+struct HistoryExerciseResult: Equatable {
+    let setsCompleted: Int?
+    let repsPerSet: Int?
+    let durationSeconds: Int?
+    let bandResistance: String?
+    let weightValue: Double?
+    let weightUnit: WeightUnit?
+    let painAfter: Int?
+    let notes: String?
+
+    init(log: ExerciseLog) {
+        setsCompleted = log.setsCompleted
+        repsPerSet = log.repsPerSet
+        durationSeconds = log.durationSeconds
+        bandResistance = log.bandResistance
+        weightValue = log.weightValue
+        weightUnit = log.weightUnit
+        painAfter = log.painAfter
+        notes = log.notes?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+    }
+
+    var performedSummary: String {
+        var parts: [String] = []
+        if let setsCompleted, let repsPerSet {
+            parts.append("\(setsCompleted) × \(repsPerSet)")
+        } else if let setsCompleted, let durationSeconds {
+            parts.append("\(setsCompleted) × \(durationSeconds)s")
+        } else if let repsPerSet {
+            parts.append("\(repsPerSet) reps")
+        } else if let durationSeconds {
+            parts.append("\(durationSeconds)s")
+        } else if let setsCompleted {
+            parts.append("\(setsCompleted) sets")
+        }
+        if let bandResistance { parts.append(bandResistance) }
+        if let weightValue, let weightUnit {
+            parts.append("\(weightValue.formatted()) \(weightUnit.rawValue)")
+        }
+        return parts.isEmpty ? "Logged" : parts.joined(separator: " · ")
+    }
 }
 
 struct HistoryDaySnapshot: Equatable {
@@ -32,16 +75,26 @@ struct HistoryDaySnapshot: Equatable {
         let exercises = routine.routineItems
             .sorted { $0.position < $1.position }
             .map { item in
-                let matches = dayLogs.filter { $0.exerciseID == item.exercise.id }
+                let matches = dayLogs
+                    .filter { $0.exerciseID == item.exercise.id }
+                    .sorted { $0.performedAt > $1.performedAt }
                 let status: AdherenceStatus
+                let resultLog: ExerciseLog?
                 if matches.isEmpty {
                     status = .skipped
-                } else if matches.contains(where: { meetsPrescription($0, item: item) }) {
+                    resultLog = nil
+                } else if let onTarget = matches.first(where: { meetsPrescription($0, item: item) }) {
                     status = .complete
+                    resultLog = onTarget
                 } else {
                     status = .partial
+                    resultLog = matches.first
                 }
-                return HistoryExerciseSnapshot(item: item, status: status)
+                return HistoryExerciseSnapshot(
+                    item: item,
+                    status: status,
+                    result: resultLog.map { HistoryExerciseResult(log: $0) }
+                )
             }
         return Self(date: calendar.startOfDay(for: date), exercises: exercises)
     }
@@ -56,6 +109,10 @@ struct HistoryDaySnapshot: Equatable {
         if let target = item.targetWeightUnit, log.weightUnit != target { return false }
         return true
     }
+}
+
+private extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
 }
 
 struct HistoryView: View {
@@ -336,24 +393,32 @@ private struct HistoryDayPanel: View {
     let snapshot: HistoryDaySnapshot
     @Binding var isExpanded: Bool
     let onClose: () -> Void
+    @State private var expandedExerciseID: UUID?
     @GestureState private var dragOffset: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 0) {
             grabber
-            ScrollView {
-                VStack(spacing: 0) {
-                    header
-                    ForEach(snapshot.exercises) { exercise in
-                        HistoryExerciseRow(snapshot: exercise)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 0) {
+                        header
+                        ForEach(snapshot.exercises) { exercise in
+                            HistoryExerciseRow(
+                                snapshot: exercise,
+                                isExpanded: expandedExerciseID == exercise.id,
+                                onToggle: { toggle(exercise, proxy: proxy) }
+                            )
+                            .id(exercise.id)
+                        }
                     }
+                    .padding(.horizontal, 24)
+                    // The floating tab bar overlays this panel. Extra scroll clearance keeps
+                    // the last exercise reachable and lets the header scroll away at half height.
+                    .padding(.bottom, 220)
                 }
-                .padding(.horizontal, 24)
-                // The floating tab bar overlays this panel. Extra scroll clearance keeps
-                // the last exercise reachable and lets the header scroll away at half height.
-                .padding(.bottom, 220)
+                .scrollIndicators(.hidden)
             }
-            .scrollIndicators(.hidden)
         }
         .background(AppTheme.paper)
         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 22, topTrailingRadius: 22))
@@ -364,6 +429,24 @@ private struct HistoryDayPanel: View {
         }
         .shadow(color: AppTheme.ink.opacity(0.18), radius: 10, y: -4)
         .offset(y: max(-10, dragOffset))
+        .onChange(of: snapshot.date) { _, _ in expandedExerciseID = nil }
+    }
+
+    private func toggle(_ exercise: HistoryExerciseSnapshot, proxy: ScrollViewProxy) {
+        let willExpand = expandedExerciseID != exercise.id
+        withAnimation(.easeInOut(duration: 0.24)) {
+            expandedExerciseID = willExpand ? exercise.id : nil
+        }
+        // At half height, center the newly revealed content so it stays above the
+        // floating tab bar. The expanded panel already has enough room and should
+        // preserve the storyboard's visible day header.
+        guard willExpand, !isExpanded else { return }
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(280))
+            withAnimation(.easeInOut(duration: 0.22)) {
+                proxy.scrollTo(exercise.id, anchor: .center)
+            }
+        }
     }
 
     private var grabber: some View {
@@ -472,24 +555,104 @@ private struct HistoryDayPanel: View {
 
 private struct HistoryExerciseRow: View {
     let snapshot: HistoryExerciseSnapshot
+    let isExpanded: Bool
+    let onToggle: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
-            StatusMark(status: snapshot.status)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(snapshot.item.exercise.name)
-                    .font(.system(size: 16, weight: .heavy))
-                    .foregroundStyle(snapshot.status == .skipped ? AppTheme.muted : AppTheme.ink)
-                Text(snapshot.item.prescriptionSummary ?? "Complete as prescribed")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(AppTheme.muted)
-                    .monospacedDigit()
+        Button(action: onToggle) {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 12) {
+                    StatusMark(status: snapshot.status)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(snapshot.item.exercise.name)
+                            .font(.system(size: 16, weight: .heavy))
+                            .foregroundStyle(snapshot.status == .skipped ? AppTheme.muted : AppTheme.ink)
+                        Text(snapshot.item.prescriptionSummary ?? "Complete as prescribed")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(AppTheme.muted)
+                            .monospacedDigit()
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(AppTheme.muted)
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                }
+
+                if isExpanded {
+                    expandedDetail
+                        .padding(.leading, 38)
+                        .padding(.top, 12)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                }
             }
-            Spacer(minLength: 0)
+            .padding(.vertical, 12)
+            .contentShape(Rectangle())
         }
-        .padding(.vertical, 12)
+        .buttonStyle(.plain)
         .overlay(alignment: .bottom) { HairRule() }
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+        .accessibilityHint("Double tap to \(isExpanded ? "collapse" : "show logged details")")
+        .accessibilityAddTraits(.isButton)
+    }
+
+    @ViewBuilder
+    private var expandedDetail: some View {
+        if let result = snapshot.result {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    Text(snapshot.status == .complete ? "Done" : result.performedSummary)
+                        .foregroundStyle(snapshot.status == .partial ? AppTheme.done : AppTheme.ink)
+                    if let pain = result.painAfter {
+                        Text(" · ")
+                            .foregroundStyle(AppTheme.muted)
+                        Text("pain \(pain)")
+                            .foregroundStyle(AppTheme.ink)
+                    }
+                }
+                .font(.system(size: 20, weight: .heavy))
+                .tracking(-0.3)
+                .monospacedDigit()
+
+                if let notes = result.notes {
+                    Text("“\(notes)”")
+                        .font(.system(size: 16, weight: .medium))
+                        .italic()
+                        .lineSpacing(2)
+                        .foregroundStyle(AppTheme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.leading, 12)
+                        .overlay(alignment: .leading) {
+                            Rectangle()
+                                .fill(AppTheme.ink)
+                                .frame(width: 3)
+                        }
+                }
+            }
+        } else {
+            Text("Not logged this day.")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(AppTheme.muted)
+        }
+    }
+
+    private var accessibilityLabel: String {
+        var values = [
+            snapshot.item.exercise.name,
+            snapshot.item.prescriptionSummary ?? "Complete as prescribed"
+        ]
+        if isExpanded {
+            if let result = snapshot.result {
+                values.append(snapshot.status == .complete ? "Done" : result.performedSummary)
+                if let pain = result.painAfter { values.append("Pain \(pain) out of 10") }
+                if let notes = result.notes { values.append(notes) }
+            } else {
+                values.append("Not logged this day")
+            }
+        }
+        return values.joined(separator: ", ")
     }
 }
 

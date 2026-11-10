@@ -16,14 +16,18 @@ final class ModelTests: XCTestCase {
         let partialLog = ExerciseLog(
             id: UUID(), exerciseID: second.exercise.id, exerciseName: second.exercise.name,
             performedAt: date, setsCompleted: 2, repsPerSet: 8, durationSeconds: nil,
-            bandResistance: "Red band", weightValue: nil, weightUnit: nil, painAfter: nil,
-            notes: nil, hasAudio: false
+            bandResistance: "Red band", weightValue: nil, weightUnit: nil, painAfter: 4,
+            notes: "Stopped when the shoulder felt tired.", hasAudio: false
         )
 
         let snapshot = HistoryDaySnapshot.make(date: date, routine: routine, logs: [completeLog, partialLog])
 
         XCTAssertEqual(snapshot.status, .partial)
         XCTAssertEqual(snapshot.exercises.map(\.status), [.complete, .partial, .skipped, .skipped])
+        XCTAssertEqual(snapshot.exercises[1].result?.performedSummary, "2 × 8 · Red band")
+        XCTAssertEqual(snapshot.exercises[1].result?.painAfter, 4)
+        XCTAssertEqual(snapshot.exercises[1].result?.notes, "Stopped when the shoulder felt tired.")
+        XCTAssertNil(snapshot.exercises[2].result)
     }
 
     func testHistoryDayIsCompleteOnlyWhenEveryExerciseMeetsItsPrescription() {
