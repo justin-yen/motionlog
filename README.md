@@ -62,6 +62,7 @@ The iOS app runs with seeded local data when Supabase configuration is absent. T
 
 - `supabase/` contains the local configuration and versioned database migrations.
 - `docs/api-contract.md` documents the data boundary shared by iOS and the backend.
+- `docs/prds/audio-to-structure-eval-pipeline.md` defines the automated voice-to-form evaluation pipeline and release gates.
 - `ios/PTTracker/` contains the SwiftUI application source.
 - `ios/project.yml` is the reproducible XcodeGen project definition.
 
@@ -100,3 +101,9 @@ xcodebuild -project PTTracker.xcodeproj -scheme PTTracker \
   -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath /tmp/PTTrackerDerivedData CODE_SIGNING_ALLOWED=NO build
 ```
+
+## Audio-to-structure evaluation
+
+The automated voice-note evaluation uses local Kokoro audio, the simulator Whisper endpoint, and the authenticated hosted parser. Pull requests that affect the pipeline run the 48-case smoke tier. The full and stability tiers are available from the GitHub Actions **Audio-to-structure eval** workflow.
+
+Each run prints a Markdown report in the action log and job summary, then uploads a self-contained HTML report plus JSON and JUnit evidence. Setup, required repository secrets, and local commands are documented in [`evals/audio_to_structure/README.md`](evals/audio_to_structure/README.md).

@@ -10,6 +10,7 @@
 ## User working preferences
 
 - When the user gives a durable, project-specific instruction about how the agent should work on MotionLog, add that preference to this `AGENTS.md` so it applies in future sessions.
+- Whenever the audio-to-structure evaluation pipeline changes, update `docs/prds/audio-to-structure-eval-pipeline.md` in the same change. Review and update its Mermaid pipeline diagram, implementation details, and `Last updated` date so the PRD remains an accurate reference.
 - Treat one-off task directions as temporary. Do not persist secrets, credentials, sensitive personal information, or instructions unrelated to this project.
 - When a new preference is persisted, tell the user that `AGENTS.md` was updated and briefly state what was added.
 
