@@ -271,6 +271,48 @@ table.cmp tr.tot td { border-top: 2px solid var(--ink); font-weight: 800; }
 .dpanel .rest { font-size: 15px; font-weight: 600; color: var(--muted); padding: 14px 0; line-height: 1.45; }
 .snapmark { position: absolute; left: 6px; z-index: 9; display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); pointer-events: none; }
 .snapmark i { width: 14px; border-top: 2px dashed var(--ink); }
+.drow { cursor: pointer; grid-template-columns: 26px 1fr 18px !important; }
+.drow .rchev { grid-row: span 2; width: 16px; height: 16px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235F6676' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat; transition: transform .25s ease; justify-self: end; }
+.drow.exp .rchev { transform: rotate(180deg); }
+.drow .dx { grid-column: 2 / -1; display: grid; grid-template-rows: 0fr; overflow: hidden; opacity: 0; transition: grid-template-rows .28s ease, opacity .2s ease, margin .28s ease; margin-top: 0; }
+.drow .dx > * { min-height: 0; }
+.drow.exp .dx { grid-template-rows: auto; opacity: 1; margin-top: 12px; }
+.drow:not(.exp) .dx { display: none; }
+.drow.exp { padding-bottom: 14px; }
+.dxr { display: grid; grid-template-columns: 58px 1fr; align-items: center; gap: 8px; padding: 8px 0; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--hair); }
+.dxr:last-child { border-bottom: none; }
+.dxr em { font-style: normal; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.painv { display: flex; align-items: center; gap: 10px; }
+.painv b { font-size: 14px; font-weight: 800; }
+.pain { display: flex; gap: 3px; }
+.pain i { width: 9px; height: 14px; border-radius: 3px; border: 1.5px solid var(--hair); }
+.pain i.on { background: var(--ink); border-color: var(--ink); }
+.dx p { margin: 0; }
+.dnote { margin-top: 12px !important; font-size: 16px; font-style: italic; font-weight: 500; line-height: 1.4; padding-left: 12px; border-left: 3px solid var(--ink); }
+.dnone { font-size: 16px; font-weight: 600; color: var(--muted); }
+.vA { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tile { border: 2px solid var(--ink); border-radius: 12px; padding: 7px 10px 8px; display: flex; flex-direction: column; gap: 1px; }
+.tile > small { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.tile b { font-size: 22px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tile b small { font-size: 13px; font-weight: 700; color: var(--muted); margin-left: 2px; letter-spacing: 0; }
+.tile b.short { color: var(--done); }
+.vB { display: flex; flex-wrap: wrap; gap: 8px; }
+.pl { height: 36px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--ink); font-size: 17px; font-weight: 800; display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
+.pl.short { border-color: var(--done); color: var(--done); }
+.pl.m { border-color: var(--hair); color: var(--muted); font-weight: 700; }
+.shortline { font-size: 18px; font-weight: 800; color: var(--done); margin-bottom: 12px !important; }
+.pmh { display: flex; justify-content: space-between; align-items: baseline; font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+.pmh b { font-size: 22px; font-variant-numeric: tabular-nums; }
+.pmh b small { font-size: 13px; color: var(--muted); }
+.pm { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+.pm i { height: 18px; border-radius: 4px; border: 2px solid var(--hair); }
+.pm i.on { background: var(--ink); border-color: var(--ink); }
+.vD { font-size: 20px; font-weight: 800; letter-spacing: -.015em; font-variant-numeric: tabular-nums; }
+.vD .short { color: var(--done); }
+.vD .m { color: var(--muted); }
+.vsw { display: flex; gap: 6px; flex-wrap: wrap; }
+.vsw button { height: 34px; padding: 0 12px; border-radius: 999px; border: 2px solid var(--ink); background: var(--paper); font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; color: var(--ink); }
+.vsw button.on { background: var(--ink); color: var(--sign); }
 .livebadge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; background: var(--ink); color: var(--sign); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .spec { background: var(--paper); border: 2px solid var(--ink); border-radius: 18px; padding: 20px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 28px; max-width: 1240px; }
 .spec h4 { margin: 0 0 6px; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
@@ -623,14 +665,41 @@ table.cmp tr.tot td { border-top: 2px solid var(--ink); font-weight: 800; }
       </figure>
       <figure>
         <div class="phone dphone" id="dpLive"></div>
-        <figcaption><span style="display:flex; gap:10px; align-items:center"><b>Try it</b><span class="livebadge">Live</span></span><small>Click any day up to today. Drag the grab strip up to 75% and back down. Drag it down from half height to dismiss, or use ✕, Esc, or tap the selected day again.</small></figcaption>
+        <figcaption><span style="display:flex; gap:10px; align-items:center"><b>Try it</b><span class="livebadge">Live</span></span><span class="vsw" id="vsw"></span><small>Style D is selected. The others stay available for comparison. Click any day up to today, then click a move to expand it. Drag the grab strip up to 75% and back down. Drag it down from half height to dismiss, or use ✕, Esc, or tap the selected day again.</small></figcaption>
       </figure>
     </div>
     <div class="spec">
       <div><h4>Open &amp; switch</h4><ul><li>Tap a past day or today. The panel unrolls downward from the calendar's edge, about 0.45 s.</li><li>At half height, tapping another day crossfades the contents in place.</li></ul></div>
       <div><h4>Heights</h4><ul><li>Two snap points: half (just under the calendar) and 75% of the screen.</li><li>Drag the grab strip up more than about 50 pt, or flick up, to reach 75%. Drag down to return to half.</li><li>The header and list scroll together. Only the grab strip takes the drag.</li></ul></div>
       <div><h4>Close</h4><ul><li>✕ beside the title, tapping the selected day again, or Esc.</li><li>Drag the grab strip down from half height. The panel rolls back up under the calendar.</li><li>VoiceOver: the ✕ button plus the two-finger scrub (escape) gesture.</li></ul></div>
-      <div><h4>Row content</h4><ul><li>Status icon, move name, and the prescription only (sets × reps or time, plus band or weight).</li><li>No outcome labels, no logged values, no notes or voice notes.</li></ul></div>
+      <div><h4>Row content</h4><ul><li>Collapsed: status icon, move name, and the prescription only (sets × reps or time, plus band or weight).</li><li>Expanded (tap), using style D: one line, “Done · pain 2” or the blue shortfall “2 × 8 · pain 4”, then the note. No time. Pain and note appear only when they exist.</li><li>One row open at a time. Changing day collapses it. The row is a button with an expanded or collapsed state for VoiceOver.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- ================= 5C EXPANDED ROW OPTIONS ================= -->
+  <section class="stage">
+    <div class="stage-head"><h2>5C · Expanded move, simpler</h2><p>Four lighter ways to show a logged move when its row is tapped: larger type, almost no labels, no time, and no repeat of the prescription. D is the chosen style. Each frame shows Wed Nov 4 at 75% height. Bridge (a hit with no note) and Heel raise (short, with pain and a note) are both open here so the two cases can be compared. The real panel opens one row at a time.</p></div>
+    <div class="row">
+      <figure>
+        <div class="phone dphone" id="dvA"></div>
+        <figcaption><b>A · Stat tiles</b><small>Two outlined tiles, Did and Pain, with 22 pt numbers. A short result turns the Did number blue. The note sits under the tiles with an ink rule.</small>
+          <div class="pc"><em>Good</em><span>Fastest to scan. Same layout for every move.</span><em>Weak</em><span>Most boxes on screen, and a hit repeats the prescribed numbers.</span></div></figcaption>
+      </figure>
+      <figure>
+        <div class="phone dphone" id="dvB"></div>
+        <figcaption><b>B · Pills</b><small>The same facts as pills in one row: result and pain. They wrap if the result is long, like a band or weight.</small>
+          <div class="pc"><em>Good</em><span>Lighter than tiles, and reads like tags.</span><em>Weak</em><span>Pills look tappable even though they aren't.</span></div></figcaption>
+      </figure>
+      <figure>
+        <div class="phone dphone" id="dvC"></div>
+        <figcaption><b>C · Pain first</b><small>Leads with a full-width 10-step pain meter. Logged numbers appear only when the move fell short (“Stopped at 2 × 8”).</small>
+          <div class="pc"><em>Good</em><span>Puts pain front and center, which is what a PT asks about.</span><em>Weak</em><span>A hit tells you nothing new apart from pain.</span></div></figcaption>
+      </figure>
+      <figure>
+        <div class="phone dphone" id="dvD"></div>
+        <figcaption><span style="display:flex; gap:10px; align-items:center"><b>D · One line</b><span class="livebadge">Chosen</span></span><small>A single 20 pt line, “Done · pain 2”, or the blue shortfall “2 × 8 · pain 4”, followed by the note. No boxes and no labels.</small>
+          <div class="pc"><em>Good</em><span>Least to read. Closest to how you'd say it out loud.</span><em>Weak</em><span>Pain is just a number, with no scale to see at a glance.</span></div></figcaption>
+      </figure>
     </div>
   </section>
 
@@ -852,14 +921,50 @@ const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const svgX = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F8D966" stroke-width="3.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
 const FULL_TOP = Math.round(844 * 0.25);
 
-function panelContent(k) {
+// Logged details per move, shown when a row is expanded. Pain and note are left out when absent.
+// "did" is the logged sets × reps or time only; the prescription already sits under the move name.
+const DETAIL = {
+  "11-04": [
+    { did: "3 × 45s", pain: 2 },
+    { did: "3 × 10", pain: 1, note: "Felt easy, maybe ready for blue." },
+    { did: "2 × 8", short: true, pain: 4, note: "Left calf tight, stopped early." },
+    null
+  ],
+  "11-09": [ { did: "3 × 45s", pain: 1 }, { did: "3 × 10" }, null, null ]
+};
+const VARIANTS = { A: "Stat tiles", B: "Pills", C: "Pain first", D: "One line" };
+function moveDetail(k, x, i, v = "D") {
+  if (x === "x") return `<div class="dx"><p class="dnone">Not logged this day.</p></div>`;
+  if (x === "p") return `<div class="dx"><p class="dnone">Not done yet today.</p></div>`;
+  const d = (DETAIL[k] || [])[i] || { did: PLAN[i][1].split(" · ")[0].replace(" sec", "s") };
+  const note = d.note ? `<p class="dnote">“${d.note}”</p>` : "";
+  const sc = d.short ? " short" : "";
+  let h = "";
+  if (v === "A") {
+    h = `<div class="vA"><span class="tile"><small>Did</small><b class="${sc}">${d.did}</b></span>`
+      + (d.pain != null ? `<span class="tile"><small>Pain</small><b>${d.pain}<small>/10</small></b></span>` : "")
+      + (d.time ? `<span class="tile"><small>At</small><b>${d.time}<small>am</small></b></span>` : "") + `</div>`;
+  } else if (v === "B") {
+    h = `<div class="vB"><span class="pl${sc}">${d.did}</span>`
+      + (d.pain != null ? `<span class="pl">Pain ${d.pain}</span>` : "")
+      + (d.time ? `<span class="pl m">${d.time} am</span>` : "") + `</div>`;
+  } else if (v === "C") {
+    h = (d.short ? `<p class="shortline">Stopped at ${d.did}</p>` : "")
+      + (d.pain != null ? `<div class="pmh"><span>Pain</span><b>${d.pain}<small>/10</small></b></div><div class="pm">${Array.from({ length: 10 }, (_, j) => `<i${j < d.pain ? ' class="on"' : ""}></i>`).join("")}</div>` : "");
+  } else {
+    h = `<p class="vD">${d.short ? `<span class="short">${d.did}</span>` : "Done"}${d.pain != null ? ` <span class="m">·</span> pain ${d.pain}` : ""}</p>`;
+  }
+  return `<div class="dx v${v}w">${h}${note}</div>`;
+}
+
+function panelContent(k, v) {
   const c = code(k), d = +k.slice(3);
   const dateLine = `${k === TODAY ? "Today · " : ""}${WD[new Date(2026, 10, d).getDay()]} · Nov ${d}`;
   if (c === "R") return { dateLine, title: "Rest day.", sum: "", rows: `<div class="rest">Nothing was prescribed on Sundays. Rest days don't count against you.</div>` };
   const n = logged(c), hits = [...c].filter(x => x === "h").length;
   const title = k === TODAY ? `${n} of 4, so far.` : n === 4 ? "All 4 done." : n === 0 ? "Nothing logged." : `${n} of 4 done.`;
   const tk = { h: "hit", s: "short", x: "skip", p: "open" };
-  const rows = [...c].map((x, i) => `<div class="drow"><i class="tk sm ${tk[x]}"></i><span class="nm"${x === "x" ? ' style="color:var(--muted)"' : ""}>${PLAN[i][0]}</span><span class="rx">${PLAN[i][1]}</span></div>`).join("");
+  const rows = [...c].map((x, i) => `<div class="drow" data-i="${i}" role="button" aria-expanded="false" tabindex="0"><i class="tk sm ${tk[x]}"></i><span class="nm"${x === "x" ? ' style="color:var(--muted)"' : ""}>${PLAN[i][0]}</span><i class="rchev"></i><span class="rx">${PLAN[i][1]}</span>${moveDetail(k, x, i, v)}</div>`).join("");
   const sum = `<div class="sumline"><span>${k === TODAY ? "In progress" : hits + " on target"}</span><span>${n}/4 logged</span></div><div class="seg">${[...c].map(x => `<i class="${x}"></i>`).join("")}</div>`;
   return { dateLine, title, sum, rows };
 }
@@ -887,10 +992,10 @@ function dropPhoneHTML() {
     <div class="home-ind"></div>`;
 }
 
-function makeDrop(el) {
+function makeDrop(el, variant = "D") {
   el.innerHTML = dropPhoneHTML();
   const cal = el.querySelector(".cal"), panel = el.querySelector(".dpanel");
-  const api = { k: null, state: "closed", el, panel };
+  const api = { k: null, state: "closed", el, panel, variant };
   api.halfTop = () => cal.offsetTop + cal.offsetHeight + 14;
   api.topFor = st => st === "full" ? FULL_TOP : api.halfTop();
   api.renderCal = (extra = {}) => {
@@ -905,7 +1010,7 @@ function makeDrop(el) {
     cal.innerHTML = h;
   };
   api.fill = k => {
-    const b = panelContent(k);
+    const b = panelContent(k, api.variant);
     panel.querySelector(".dl").textContent = b.dateLine;
     panel.querySelector(".tt").textContent = b.title;
     panel.querySelector(".sm").innerHTML = b.sum;
@@ -929,6 +1034,24 @@ function makeDrop(el) {
     api.state = "closed"; api.layout();
     setTimeout(() => { if (api.state === "closed") { panel.style.transition = "none"; panel.style.top = api.halfTop() + "px"; panel.offsetHeight; panel.style.transition = ""; } }, 450);
   };
+  api.expand = (i, scroll = true) => {
+    panel.querySelectorAll(".drow").forEach(r => {
+      const on = +r.dataset.i === i && !r.classList.contains("exp");
+      r.classList.toggle("exp", on); r.setAttribute("aria-expanded", on);
+      if (on && scroll) setTimeout(() => {
+        const ps = panel.querySelector(".ps"), rb = r.getBoundingClientRect(), pb = ps.getBoundingClientRect();
+        const z = pb.height / ps.clientHeight || 1;
+        const over = (rb.bottom - (pb.bottom - 100 * z)) / z;
+        if (over > 0) ps.scrollBy({ top: Math.min(over, (rb.top - pb.top) / z - 8), behavior: "smooth" });
+      }, 300);
+    });
+  };
+  panel.querySelector(".rows").addEventListener("click", e => {
+    const r = e.target.closest(".drow"); if (r) api.expand(+r.dataset.i);
+  });
+  panel.querySelector(".rows").addEventListener("keydown", e => {
+    const r = e.target.closest(".drow"); if (r && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); api.expand(+r.dataset.i); }
+  });
   api.renderCal(); panel.style.top = api.halfTop() + "px";
   return api;
 }
@@ -942,7 +1065,13 @@ function staticFrames() {
   f2.state = "half"; f2.layout();
   f3.state = "half"; f3.layout(); f3.panel.querySelector(".ps").scrollTop = 140;
   f4.state = "full"; f4.layout();
+  VFRAMES.forEach(f => {
+    f.panel.style.transition = "none"; f.k = "11-04"; f.fill("11-04"); f.state = "full"; f.layout();
+    f.panel.querySelectorAll(".drow").forEach(r => { if (r.dataset.i === "0" || r.dataset.i === "2") { r.classList.add("exp"); r.setAttribute("aria-expanded", "true"); } });
+    f.panel.querySelector(".ps").scrollTop = 96;
+  });
 }
+const VFRAMES = Object.keys(VARIANTS).map(v => makeDrop(document.getElementById("dv" + v), v));
 staticFrames();
 
 // live prototype
@@ -954,6 +1083,19 @@ live.el.querySelector(".cal").addEventListener("click", e => {
   if (live.state !== "closed" && live.k === k) live.close(); else live.show(k);
 });
 live.panel.querySelector(".x").addEventListener("click", () => live.close());
+const vsw = document.getElementById("vsw");
+vsw.innerHTML = Object.entries(VARIANTS).map(([v, n]) => `<button data-v="${v}" class="${v === live.variant ? "on" : ""}">${v} · ${n}</button>`).join("");
+vsw.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  live.variant = b.dataset.v;
+  vsw.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+  if (live.k) {
+    const open = live.panel.querySelector(".drow.exp"), top = live.panel.querySelector(".ps").scrollTop;
+    live.fill(live.k);
+    if (open) live.expand(+open.dataset.i, false);
+    live.panel.querySelector(".ps").scrollTop = top;
+  }
+});
 document.addEventListener("keydown", e => { if (e.key === "Escape" && live.state !== "closed") live.close(); });
 
 let drag = null;

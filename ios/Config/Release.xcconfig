@@ -7,3 +7,6 @@ INFOPLIST_FILE = PTTracker/Info.plist
 SUPABASE_URL = $(inherited)
 SUPABASE_ANON_KEY = $(inherited)
 PT_USE_MOCK_DATA = NO
+// The test login must never ship; blank anything set in Secrets.xcconfig.
+AUTH_TEST_PHONE =
+AUTH_TEST_CODE =

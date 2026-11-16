@@ -33,6 +33,10 @@
 	<string>PT Tracker converts your voice note into exercise details for you to review.</string>
 	<key>PT_USE_MOCK_DATA</key>
 	<string>$(PT_USE_MOCK_DATA)</string>
+	<key>AUTH_TEST_PHONE</key>
+	<string>$(AUTH_TEST_PHONE)</string>
+	<key>AUTH_TEST_CODE</key>
+	<string>$(AUTH_TEST_CODE)</string>
 	<key>SUPABASE_ANON_KEY</key>
 	<string>$(SUPABASE_ANON_KEY)</string>
 	<key>SUPABASE_URL</key>

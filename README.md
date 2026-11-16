@@ -16,7 +16,7 @@ The workspace is linked and the versioned migrations have been applied to the ho
 - Phone: `+1 202-555-0147`
 - Code: `123456`
 
-This is a fictional test number. Supabase accepts its fixed code without sending a message. A development-only Send SMS Hook rejects every real phone number, preventing accidental SMS charges. Remove `[auth.sms.test_otp]`, replace the hook with a real provider, and expire the test user before beta.
+This is a fictional test number. Debug builds recognize it locally, skip the unnecessary SMS request and its resend cooldown, and show the fixed code on the verification screen. Supabase accepts the code without sending a message. A development-only Send SMS Hook rejects every real phone number, preventing accidental SMS charges. Remove the Debug test-login settings, `[auth.sms.test_otp]`, replace the hook with a real provider, and expire the test user before beta.
 
 ## First vertical slice
 

@@ -325,6 +325,280 @@ figcaption small { font-size: 14px; line-height: 1.45; color: var(--muted); }
     </div>
   </section>
 
+  <!-- ================= EXPLORATION: SHOWING WHAT WAS LOGGED ================= -->
+  <style>
+    .xp-note { margin: 0; font-size: 15px; line-height: 1.5; color: var(--muted); max-width: 70ch; }
+    .x-done { color: var(--done); }
+    .chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: .02em; white-space: nowrap; }
+    .chip.blue { background: #E6EBFE; color: #2A47C9; }
+    .chip.line { border: 1.5px solid var(--ink); color: var(--ink); }
+    .chip.short { background: #F1F2F5; color: var(--ink); }
+    .resultcol { width: 78px; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .resultcol b { font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--done); font-variant-numeric: tabular-nums; }
+    .resultcol small { font-size: 12px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .logpanel { background: #EEF2FE; border-radius: 14px; padding: 14px 14px 14px 12px; margin: 10px 0; display: flex; gap: 12px; align-items: flex-start; }
+    .tag.option { background: var(--paper); border-style: dashed; }
+  </style>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="sb" viewBox="0 0 72 14"><g fill="currentColor"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></symbol>
+    <symbol id="chk" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <section class="stage" id="logged-explorations">
+    <div class="stage-head"><h2>Exploration: showing what you logged</h2><p>Today list and exercise detail, after some moves are logged.</p></div>
+    <p class="xp-note">Same morning in every option: Bridge logged at 50 sec (goal 45), Standing row logged at 3 × 8 with the red band, pain 4/10 and a note (goal 3 × 10). Heel raise and Clamshell aren't done yet. The shortfall on Standing row is deliberate, so you can see how each option handles a log that doesn't match the prescription.</p>
+
+    <!-- ---------- Today list options ---------- -->
+    <div class="row">
+
+      <!-- A -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" style="color:var(--ink)"><use href="#sb"/></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Sat · Nov 7</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">Let’s move.</h1></div>
+            <div class="card" style="margin-top:22px; padding:22px; display:flex; align-items:center; justify-content:space-between; margin-right:6px">
+              <div class="stack" style="gap:6px"><span class="label">Today’s routine</span><span style="font-size:27px; font-weight:800; letter-spacing:-.03em">2 moves to go</span><span style="font-size:15px; font-weight:500">2 logged, keep going</span></div>
+              <div class="num" style="width:90px;height:90px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800">2/4</div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="list">
+              <div class="item"><span class="tick on"><svg width="18" height="18" style="color:#fff"><use href="#chk"/></svg></span><span class="txt"><span class="name">Bridge</span><span class="meta"><b class="x-done num">Did 50 sec</b> · goal 45 sec</span></span><span class="chev"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+              <div class="item"><span class="tick on"><svg width="18" height="18" style="color:#fff"><use href="#chk"/></svg></span><span class="txt"><span class="name">Standing row</span><span class="meta"><b class="x-done num">Did 3 × 8</b> · goal 3 × 10</span></span><span class="chev"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Heel raise</span><span class="meta">2 × 12</span></span><span class="chev"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Clamshell</span><span class="meta">2 × 10 · Green band</span></span><span class="chev"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+            </div>
+          </div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>A · Result replaces the goal</b><i class="tag option">List option</i></span><small>The cheapest change. The row's one subtitle line leads with what you did, in blue, and keeps the goal after it. Rows stay the same height. Pain and notes don't fit, so they live on the detail page.</small></figcaption>
+      </figure>
+
+      <!-- B -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" style="color:var(--ink)"><use href="#sb"/></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Sat · Nov 7</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">Let’s move.</h1></div>
+            <div class="card" style="margin-top:22px; padding:22px; display:flex; align-items:center; justify-content:space-between; margin-right:6px">
+              <div class="stack" style="gap:6px"><span class="label">Today’s routine</span><span style="font-size:27px; font-weight:800; letter-spacing:-.03em">2 moves to go</span><span style="font-size:15px; font-weight:500">2 logged, keep going</span></div>
+              <div class="num" style="width:90px;height:90px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800">2/4</div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="list">
+              <div class="item" style="align-items:flex-start"><span class="tick on"><svg width="18" height="18" style="color:#fff"><use href="#chk"/></svg></span><span class="txt"><span class="name">Bridge</span><span class="meta">45 sec</span><span class="x-done num" style="font-size:14px;font-weight:700">Logged 9:08 · 50 sec · Pain 2</span></span><span class="chev" style="padding-top:8px"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+              <div class="item" style="align-items:flex-start"><span class="tick on"><svg width="18" height="18" style="color:#fff"><use href="#chk"/></svg></span><span class="txt"><span class="name">Standing row</span><span class="meta">3 × 10 · Red band</span><span class="x-done num" style="font-size:14px;font-weight:700">Logged 9:14 · 3 × 8 · Pain 4</span></span><span class="chev" style="padding-top:8px"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Heel raise</span><span class="meta">2 × 12</span></span><span class="chev"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Clamshell</span><span class="meta">2 × 10 · Green band</span></span><span class="chev"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+            </div>
+          </div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>B · Log line under the goal</b><i class="tag option">List option</i></span><small>The prescription stays exactly where it was. Logged rows grow one blue line with the time, the result and pain. Easy to build, and pain is visible from the list, but rows get taller and the two lines of numbers take a moment to compare.</small></figcaption>
+      </figure>
+
+      <!-- C -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" style="color:var(--ink)"><use href="#sb"/></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Sat · Nov 7</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">Let’s move.</h1></div>
+            <div class="card" style="margin-top:22px; padding:22px; display:flex; align-items:center; justify-content:space-between; margin-right:6px">
+              <div class="stack" style="gap:6px"><span class="label">Today’s routine</span><span style="font-size:27px; font-weight:800; letter-spacing:-.03em">2 moves to go</span><span style="font-size:15px; font-weight:500">2 logged, keep going</span></div>
+              <div class="num" style="width:90px;height:90px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800">2/4</div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="list">
+              <div class="item"><span class="tick on"><svg width="18" height="18" style="color:#fff"><use href="#chk"/></svg></span><span class="txt"><span class="name">Bridge</span><span class="meta">45 sec</span></span><span class="resultcol"><b>50 sec</b></span></div>
+              <div class="item"><span class="tick on"><svg width="18" height="18" style="color:#fff"><use href="#chk"/></svg></span><span class="txt"><span class="name">Standing row</span><span class="meta">3 × 10 · Red band</span></span><span class="resultcol"><b>3 × 8</b></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Heel raise</span><span class="meta">2 × 12</span></span><span class="resultcol"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Clamshell</span><span class="meta">2 × 10 · Green band</span></span><span class="resultcol"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+            </div>
+          </div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>C · Result column</b><i class="tag option">List option</i></span><small>Every row keeps its original goal as the subtitle, logged or not. Once a move is done, the chevron is replaced by what you logged, in blue on the right, so goal and result sit on the same line. Long bands or weights need a short form to fit the column.</small></figcaption>
+      </figure>
+
+      <!-- D -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" style="color:var(--ink)"><use href="#sb"/></svg></div>
+          <div class="screen" style="padding-top:22px">
+            <span class="eyebrow">Sat · Nov 7</span>
+            <div class="topbar" style="padding-top:6px"><h1 class="display">Let’s move.</h1></div>
+            <div class="card" style="margin-top:22px; padding:18px 22px; display:flex; align-items:center; justify-content:space-between; margin-right:6px">
+              <div class="stack" style="gap:6px"><span class="label">Today’s routine</span><span style="font-size:24px; font-weight:800; letter-spacing:-.03em">2 moves to go</span></div>
+              <div class="num" style="width:70px;height:70px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800">2/4</div>
+            </div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="list">
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Heel raise</span><span class="meta">2 × 12</span></span><span class="chev"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+              <div class="item"><span class="tick"></span><span class="txt"><span class="name">Clamshell</span><span class="meta">2 × 10 · Green band</span></span><span class="chev"><svg width="20" height="20"><use href="#chev"/></svg></span></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0 0"><span class="label x-done">Done · 2</span><span class="label" style="color:var(--muted)">Tap to edit</span></div>
+            <div class="logpanel">
+              <span class="tick on" style="width:28px;height:28px;border-radius:50%;background:var(--done);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" style="color:#fff"><use href="#chk"/></svg></span>
+              <div class="stack" style="gap:7px;flex:1;min-width:0">
+                <div style="display:flex;justify-content:space-between"><span style="font-size:17px;font-weight:800">Standing row</span><span class="num" style="font-size:13px;font-weight:700;color:var(--muted)">9:14 AM</span></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip blue num">3 × 8</span><span class="chip short num">2 short / set</span><span class="chip line">Pain 4</span></div>
+                <span style="font-size:14px;font-weight:500;font-style:italic">“Shoulder pinched on the last set.”</span>
+              </div>
+            </div>
+            <div class="logpanel" style="margin-top:0">
+              <span style="width:28px;height:28px;border-radius:50%;background:var(--done);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" style="color:#fff"><use href="#chk"/></svg></span>
+              <div class="stack" style="gap:7px;flex:1;min-width:0">
+                <div style="display:flex;justify-content:space-between"><span style="font-size:17px;font-weight:800">Bridge</span><span class="num" style="font-size:13px;font-weight:700;color:var(--muted)">9:08 AM</span></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip blue num">50 sec</span><span class="chip line">Pain 2</span></div>
+              </div>
+            </div>
+          </div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>D · To do, then done</b><i class="tag option">List option</i></span><small>Remaining moves move to the top. Logged moves drop into a “Done” group of blue panels with the result, a shortfall chip, pain and the note. Richest view of the morning, but the list reorders as you go, which may fight the PT's prescribed order.</small></figcaption>
+      </figure>
+    </div>
+
+    <!-- ---------- Exercise detail options ---------- -->
+    <div class="row">
+
+      <!-- 1 -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" style="color:var(--ink)"><use href="#sb"/></svg></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="topbar"><div class="back"><svg width="22" height="22"><use href="#back"/></svg>Today</div><span class="eyebrow num" style="font-size:13px">Move 2 of 4</span></div>
+            <h1 class="display" style="padding-top:14px">Standing row.</h1>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:18px"><span class="label x-done">Today’s work</span></div>
+            <div style="margin-top:10px; margin-right:6px; background:var(--done); color:var(--paper); border:2px solid var(--ink); border-radius:18px; box-shadow:6px 6px 0 var(--ink); padding:4px 18px">
+              <div style="display:flex;align-items:center;padding:10px 0 8px;border-bottom:1.5px solid rgba(255,255,255,.45)">
+                <span class="label" style="width:78px;flex-shrink:0">Time</span><span class="label" style="width:52px;flex-shrink:0">Sets</span><span class="label" style="width:52px;flex-shrink:0">Reps</span><span class="label" style="flex:1">Band</span>
+              </div>
+              <div style="padding:12px 0">
+                <div style="display:flex;align-items:baseline"><span class="num" style="width:78px;flex-shrink:0;font-size:14px;font-weight:700">9:14 AM</span><span class="num" style="width:52px;flex-shrink:0;font-size:26px;font-weight:800;line-height:1">3</span><span class="num" style="width:52px;flex-shrink:0;font-size:26px;font-weight:800;line-height:1">8</span><span style="flex:1;font-size:16px;font-weight:800">Red</span></div>
+                <div style="padding:8px 0 0 78px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="chip" style="border:1.5px solid var(--paper);color:var(--paper);height:22px">Pain 4</span><span style="font-size:13px;font-weight:600;font-style:italic">“Shoulder pinched.”</span></div>
+              </div>
+            </div>
+            <span class="label" style="padding-top:22px">Prescribed</span>
+            <div class="card" style="margin-top:10px; margin-right:6px; padding:12px 20px; display:flex; box-shadow:4px 4px 0 var(--ink)">
+              <div class="stack" style="flex:1;gap:2px"><span class="label">Sets</span><span class="num" style="font-size:24px;font-weight:800">3</span></div>
+              <div class="stack" style="flex:1;gap:2px"><span class="label">Reps</span><span class="num" style="font-size:24px;font-weight:800">10</span></div>
+              <div class="stack" style="flex:1.2;gap:2px"><span class="label">Band</span><span style="font-size:17px;font-weight:800;padding-top:4px">Red band</span></div>
+            </div>
+            <span class="label" style="padding-top:24px">How to do it</span>
+            <div style="display:flex; gap:14px; align-items:baseline; padding-top:10px"><span class="num" style="width:22px;font-size:20px;font-weight:800">1</span><span style="font-size:17px;font-weight:500">Anchor the band at chest height.</span></div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:110px;padding:12px 24px 0;background:var(--paper);border-top:1px solid var(--hair)"><div class="btn" style="margin-right:4px">Log it again</div></div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>1 · Two signs</b><i class="tag option">Detail option</i></span><small>Your log gets its own blue card on top, laid out like 1b: “Today’s work”, then a row with the time, sets, reps and the resistance you used. A weight would take the last column instead (“12 lb”, labeled Weight). Pain and the note sit under the row, each only if it was logged. Log again and it becomes 1b. The yellow prescription stays below.</small></figcaption>
+      </figure>
+
+      <!-- 1b -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" style="color:var(--ink)"><use href="#sb"/></svg></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="topbar"><div class="back"><svg width="22" height="22"><use href="#back"/></svg>Today</div><span class="eyebrow num" style="font-size:13px">Move 2 of 4</span></div>
+            <h1 class="display" style="padding-top:14px">Standing row.</h1>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:18px"><span class="label x-done">Today’s work</span></div>
+            <div style="margin-top:10px; margin-right:6px; background:var(--done); color:var(--paper); border:2px solid var(--ink); border-radius:18px; box-shadow:6px 6px 0 var(--ink); padding:4px 18px">
+              <div style="display:flex;align-items:center;padding:10px 0 8px;border-bottom:1.5px solid rgba(255,255,255,.45)">
+                <span class="label" style="width:78px;flex-shrink:0">Time</span><span class="label" style="width:52px;flex-shrink:0">Sets</span><span class="label" style="width:52px;flex-shrink:0">Reps</span><span class="label" style="flex:1">Band</span>
+              </div>
+              <div style="padding:12px 0;border-bottom:1.5px solid rgba(255,255,255,.45)">
+                <div style="display:flex;align-items:baseline"><span class="num" style="width:78px;flex-shrink:0;font-size:14px;font-weight:700">9:14 AM</span><span class="num" style="width:52px;flex-shrink:0;font-size:26px;font-weight:800;line-height:1">3</span><span class="num" style="width:52px;flex-shrink:0;font-size:26px;font-weight:800;line-height:1">8</span><span style="flex:1;font-size:16px;font-weight:800">Red</span></div>
+                <div style="padding:8px 0 0 78px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="chip" style="border:1.5px solid var(--paper);color:var(--paper);height:22px">Pain 4</span><span style="font-size:13px;font-weight:600;font-style:italic">“Shoulder pinched.”</span></div>
+              </div>
+              <div style="padding:12px 0;border-bottom:1.5px solid rgba(255,255,255,.45)">
+                <div style="display:flex;align-items:baseline"><span class="num" style="width:78px;flex-shrink:0;font-size:14px;font-weight:700">12:30 PM</span><span class="num" style="width:52px;flex-shrink:0;font-size:26px;font-weight:800;line-height:1">3</span><span class="num" style="width:52px;flex-shrink:0;font-size:26px;font-weight:800;line-height:1">10</span><span style="flex:1;font-size:16px;font-weight:800">Red</span></div>
+              </div>
+              <div style="padding:12px 0">
+                <div style="display:flex;align-items:baseline"><span class="num" style="width:78px;flex-shrink:0;font-size:14px;font-weight:700">6:05 PM</span><span class="num" style="width:52px;flex-shrink:0;font-size:26px;font-weight:800;line-height:1">2</span><span class="num" style="width:52px;flex-shrink:0;font-size:26px;font-weight:800;line-height:1">10</span><span style="flex:1;font-size:16px;font-weight:800">Green</span></div>
+                <div style="padding:8px 0 0 78px"><span class="chip" style="border:1.5px solid var(--paper);color:var(--paper);height:22px">Pain 2</span></div>
+              </div>
+            </div>
+            <span class="label" style="padding-top:22px">Prescribed</span>
+            <div class="card" style="margin-top:10px; margin-right:6px; padding:12px 20px; display:flex; box-shadow:4px 4px 0 var(--ink)">
+              <div class="stack" style="flex:1;gap:2px"><span class="label">Sets</span><span class="num" style="font-size:24px;font-weight:800">3</span></div>
+              <div class="stack" style="flex:1;gap:2px"><span class="label">Reps</span><span class="num" style="font-size:24px;font-weight:800">10</span></div>
+              <div class="stack" style="flex:1.2;gap:2px"><span class="label">Band</span><span style="font-size:17px;font-weight:800;padding-top:4px">Red band</span></div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:110px;padding:12px 24px 0;background:var(--paper);border-top:1px solid var(--hair)"><div class="btn" style="margin-right:4px">Log it again</div></div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>1b · Two signs, logged more than once</b><i class="tag option">Detail option</i></span><small>Several logs on the same day stay in one blue card, one row each, oldest first, with a shared header for time, sets, reps and band. Pain and the note sit under the row they belong to, only when logged. On the Today list, the blue result shows the latest log.</small></figcaption>
+      </figure>
+
+      <!-- 2 -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" style="color:var(--ink)"><use href="#sb"/></svg></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="topbar"><div class="back"><svg width="22" height="22"><use href="#back"/></svg>Today</div><span class="eyebrow num" style="font-size:13px">Move 2 of 4</span></div>
+            <h1 class="display" style="padding-top:14px">Standing row.</h1>
+            <div style="display:flex;align-items:center;gap:8px;padding-top:12px"><span style="width:24px;height:24px;border-radius:50%;background:var(--done);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" style="color:#fff"><use href="#chk"/></svg></span><span class="x-done num" style="font-size:15px;font-weight:700">Logged 9:14 AM · Pain 4/10</span></div>
+            <div class="card" style="margin-top:18px; margin-right:6px; padding:18px 20px; display:flex">
+              <div class="stack" style="flex:1;gap:4px"><span class="label">Sets</span><span class="num" style="font-size:40px;font-weight:800;line-height:1">3</span><span class="num" style="font-size:13px;font-weight:700">goal 3 ✓</span></div>
+              <div style="width:2px;background:var(--ink);margin:0 16px"></div>
+              <div class="stack" style="flex:1;gap:4px"><span class="label">Reps</span><span class="num" style="font-size:40px;font-weight:800;line-height:1">8</span><span class="num" style="font-size:13px;font-weight:700">goal 10</span></div>
+              <div style="width:2px;background:var(--ink);margin:0 16px"></div>
+              <div class="stack" style="flex:1.2;gap:4px"><span class="label">Band</span><span style="font-size:19px;font-weight:800;line-height:1.1;padding-top:6px">Red</span><span style="font-size:13px;font-weight:700;padding-top:7px">as prescribed</span></div>
+            </div>
+            <div style="margin-top:16px;display:flex;gap:10px;align-items:flex-start">
+              <span class="label" style="padding-top:3px;flex-shrink:0">Note</span>
+              <span style="font-size:16px;font-weight:600;font-style:italic">“Shoulder pinched on the last set.”</span>
+            </div>
+            <span class="label" style="padding-top:26px">How to do it</span>
+            <div style="display:flex; gap:14px; align-items:baseline; padding-top:12px"><span class="num" style="width:22px;font-size:20px;font-weight:800">1</span><span style="font-size:17px;font-weight:500">Anchor the band at chest height.</span></div>
+            <div style="display:flex; gap:14px; align-items:baseline; padding-top:10px"><span class="num" style="width:22px;font-size:20px;font-weight:800">2</span><span style="font-size:17px;font-weight:500">Keep your shoulders relaxed.</span></div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:110px;padding:12px 24px 0;background:var(--paper);border-top:1px solid var(--hair)"><div class="btn" style="margin-right:4px">Log it again</div></div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>2 · Goal vs. done in one sign</b><i class="tag option">Detail option</i></span><small>The yellow card keeps its shape, but once logged the big numbers become what you did, with the goal small underneath. Matches list option C, so the same pattern carries from list to detail. Still one sign per screen.</small></figcaption>
+      </figure>
+
+      <!-- 3 -->
+      <figure>
+        <div class="phone">
+          <div class="status"><span class="num">9:41</span><svg width="72" height="14" style="color:var(--ink)"><use href="#sb"/></svg></div>
+          <div class="screen" style="padding-top:8px">
+            <div class="topbar"><div class="back"><svg width="22" height="22"><use href="#back"/></svg>Today</div><span class="eyebrow num" style="font-size:13px">Move 2 of 4</span></div>
+            <h1 class="display" style="padding-top:14px">Standing row.</h1>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:20px"><span class="label x-done">Today · 9:14 AM</span><span class="label" style="color:var(--muted)">Edit</span></div>
+            <div class="rule" style="margin-top:10px;background:var(--done)"></div>
+            <p style="margin:16px 0 0;font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.15">3 sets of 8 with the red band.</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:12px"><span class="chip line">Pain 4 / 10</span><span class="chip short num">2 reps short per set</span><span class="chip blue">▶ 0:07 voice note</span></div>
+            <p style="margin:14px 0 0;font-size:16px;font-weight:600;font-style:italic">“Shoulder pinched on the last set.”</p>
+            <div style="margin-top:26px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:14px 0;display:flex;justify-content:space-between;align-items:center">
+              <div class="stack" style="gap:3px"><span class="label" style="color:var(--muted)">Prescribed</span><span class="num" style="font-size:17px;font-weight:800">3 × 10 · Red band</span></div>
+            </div>
+            <div style="padding:14px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:center"><span style="font-size:17px;font-weight:800">How to do it</span><svg width="20" height="20"><use href="#chev"/></svg></div>
+            <div style="padding:14px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:center"><span style="font-size:17px;font-weight:800">From your PT</span><svg width="20" height="20"><use href="#chev"/></svg></div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:110px;padding:12px 24px 0;background:var(--paper);border-top:1px solid var(--hair)"><div class="btn" style="margin-right:4px">Log it again</div></div>
+          <nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>
+          <div class="home-ind"></div>
+        </div>
+        <figcaption><span class="cap-top"><b>3 · Today's log leads</b><i class="tag option">Detail option</i></span><small>Once logged, the page is about the log: one plain sentence of what you did, then chips for pain, the shortfall and the voice note. The prescription folds to a single line and the instructions collapse. Most readable, but the yellow sign disappears from this state.</small></figcaption>
+      </figure>
+    </div>
+  </section>
+
   <!-- ================= HISTORY & PROFILE ================= -->
   <section class="stage">
     <div class="stage-head"><h2>History &amp; profile</h2><p>What you've logged, and account and privacy.</p></div>

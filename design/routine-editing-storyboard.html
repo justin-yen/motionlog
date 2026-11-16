@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MotionLog Routine Editing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Routine editing storyboard. Signage Sprint tokens, same as the other design files:
+   ink type, one chrome-yellow sign per screen, completion blue for anything done. Light-only by design. */
+:root {
+  --ink: #111827; --sign: #F8D966; --done: #4A6CF5; --paper: #FFFFFF;
+  --muted: #5F6676; --hair: #D9DCE4; --soft: #C9CDD6; --canvas: #ECEDEF;
+  --font: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+.page { max-width: 1760px; margin: 0 auto; padding: 48px 16px 80px; display: flex; flex-direction: column; gap: 56px; }
+.intro { display: flex; flex-direction: column; gap: 10px; max-width: 860px; }
+.intro .kicker { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.intro h1 { margin: 0; font-size: clamp(36px, 6vw, 60px); font-weight: 800; letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+.intro p { margin: 0; font-size: 17px; line-height: 1.55; color: var(--muted); max-width: 68ch; }
+.intro p b { color: var(--ink); }
+.stage { display: flex; flex-direction: column; gap: 24px; }
+.stage-head { display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid var(--ink); padding-bottom: 12px; flex-wrap: wrap; }
+.stage-head h2 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+.stage-head p { margin: 0; font-size: 15px; color: var(--muted); max-width: 76ch; line-height: 1.5; }
+.row { display: flex; flex-wrap: wrap; gap: 44px 36px; }
+figure { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+figcaption { display: flex; flex-direction: column; gap: 8px; max-width: 390px; }
+figcaption b { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+figcaption small { font-size: 14px; line-height: 1.5; color: var(--muted); }
+.verdict { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14.5px; line-height: 1.5; max-width: 1240px; background: var(--paper); border: 2px solid var(--ink); border-radius: 18px; padding: 16px 20px; }
+.verdict em { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding-top: 3px; }
+
+/* phone */
+.phone { width: 390px; height: 844px; flex-shrink: 0; background: var(--paper); border-radius: 46px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 0 rgba(17,24,39,.06), 0 18px 40px -24px rgba(17,24,39,.35); }
+@media (max-width: 440px) { .phone { zoom: .86; } }
+.status { height: 54px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 6px 34px 0 46px; font-size: 17px; font-weight: 700; position: relative; z-index: 9; }
+.screen { flex: 1; display: flex; flex-direction: column; padding: 0 24px; min-height: 0; }
+.eyebrow { font-size: 14px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.display { margin: 0; font-size: 44px; font-weight: 800; letter-spacing: -.04em; line-height: 1.02; }
+.label { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.label.m { color: var(--muted); }
+.rule { height: 2px; background: var(--ink); flex-shrink: 0; }
+.card { background: var(--sign); border: 2px solid var(--ink); border-radius: 18px; box-shadow: 6px 6px 0 var(--ink); margin-right: 6px; }
+.pill { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--ink); background: var(--sign); font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.pill.ghost { background: var(--paper); }
+.pill.ink { background: var(--ink); color: var(--paper); }
+.btn { height: 60px; border-radius: 16px; border: 2px solid var(--ink); background: var(--sign); box-shadow: 4px 4px 0 var(--ink); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; flex-shrink: 0; margin-right: 4px; }
+.btn.ghost { background: var(--paper); box-shadow: none; }
+.btn.sm { height: 52px; }
+.link { font-size: 15px; font-weight: 800; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; text-decoration-color: var(--sign); }
+.back { display: flex; align-items: center; gap: 4px; height: 44px; font-size: 14px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.stack { display: flex; flex-direction: column; }
+.num { font-variant-numeric: tabular-nums; }
+.nav { position: absolute; left: 24px; right: 24px; bottom: 26px; height: 72px; background: var(--ink); border-radius: 22px; display: flex; align-items: center; padding: 0 14px; gap: 6px; z-index: 3; }
+.nav span { flex: 1; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--paper); font-size: 15px; font-weight: 800; letter-spacing: .04em; border-radius: 13px; }
+.nav span.on { background: var(--sign); color: var(--ink); }
+.home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--ink); z-index: 12; }
+.dockbar { position: absolute; left: 24px; right: 24px; bottom: 30px; display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; z-index: 3; }
+.dockbar .btn { margin: 0; }
+
+/* rows */
+.list { display: flex; flex-direction: column; }
+.item { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--hair); background: var(--paper); position: relative; }
+.item .txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.item .name { font-size: 19px; font-weight: 800; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; }
+.item .meta { font-size: 15px; color: var(--muted); font-weight: 500; }
+.item .res { font-size: 20px; font-weight: 800; color: var(--done); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.item.gone .name, .item.gone .meta { color: var(--soft); text-decoration: line-through; text-decoration-thickness: 2px; }
+.tick { width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; border: 2px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; }
+.tick.on { background: var(--done) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/55% no-repeat; border-color: var(--done); }
+.minus { width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--ink); display: inline-flex; align-items: center; justify-content: center; }
+.minus::after { content: ""; width: 12px; height: 3px; border-radius: 2px; background: var(--paper); }
+.plus { width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; border: 2px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; line-height: 1; }
+.handle { width: 22px; height: 16px; flex-shrink: 0; background: linear-gradient(var(--ink) 0 0) 0 0/100% 2.5px no-repeat, linear-gradient(var(--ink) 0 0) 0 50%/100% 2.5px no-repeat, linear-gradient(var(--ink) 0 0) 0 100%/100% 2.5px no-repeat; opacity: .55; }
+.chev { width: 20px; height: 20px; flex-shrink: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") center/contain no-repeat; }
+.badge { width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; border: 2px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
+.tag { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; border: 1.5px solid var(--ink); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); }
+.tag.fill { background: var(--ink); color: var(--paper); }
+.addrow { display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin-top: 14px; border: 2px dashed var(--soft); border-radius: 16px; font-size: 16px; font-weight: 800; }
+.undo { margin-left: auto; font-size: 14px; font-weight: 800; text-decoration: underline; text-decoration-thickness: 2px; text-decoration-color: var(--sign); text-underline-offset: 3px; }
+
+/* swipe */
+.swipewrap { position: relative; border-bottom: 1px solid var(--hair); overflow: hidden; margin: 0 -24px; }
+.swipewrap .actions { position: absolute; right: 0; top: 0; bottom: 0; display: flex; }
+.swipewrap .actions span { width: 66px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.swipewrap .actions .ed { background: var(--sign); border-left: 2px solid var(--ink); }
+.swipewrap .actions .rm { background: var(--ink); color: var(--paper); }
+.swipewrap .item { transform: translateX(-132px); padding-left: 24px; padding-right: 24px; border-bottom: none; }
+
+/* editors */
+.stepper { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--hair); }
+.stepper .lb { font-size: 17px; font-weight: 800; }
+.stepper .lb small { display: block; font-size: 13px; font-weight: 600; color: var(--muted); }
+.stepper .ctl { display: flex; align-items: center; gap: 14px; }
+.sbtn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; line-height: 1; background: var(--paper); }
+.sval { min-width: 48px; text-align: center; font-size: 30px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.sval.chg { color: var(--done); }
+.mini-step { display: inline-flex; align-items: center; gap: 8px; }
+.mini-step .sbtn { width: 34px; height: 34px; font-size: 18px; }
+.mini-step .sval { font-size: 22px; min-width: 30px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { height: 36px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--hair); display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 800; }
+.chip.on { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.chip i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 1.5px solid rgba(17,24,39,.35); }
+.seg2 { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; height: 42px; }
+.seg2 span { display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.seg2 span.on { background: var(--ink); color: var(--paper); }
+.field { border: 2px solid var(--ink); border-radius: 14px; min-height: 52px; display: flex; align-items: center; padding: 0 16px; font-size: 16px; font-weight: 600; gap: 10px; background: var(--paper); }
+.field .ph { color: #9AA0AC; font-weight: 500; }
+.seg3 { display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; height: 42px; }
+.seg3 span { display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; border-left: 2px solid var(--ink); }
+.seg3 span:first-child { border-left: none; }
+.seg3 span.on, .seg2 span.on { background: var(--ink); color: var(--paper); }
+.seg2 span + span { border-left: 2px solid var(--ink); }
+.sval small { font-size: 14px; font-weight: 700; color: var(--muted); margin-left: 3px; letter-spacing: 0; }
+.unit { display: inline-grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; height: 32px; width: 84px; }
+.unit span { display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
+.unit span.on { background: var(--ink); color: var(--paper); }
+.quick { display: flex; gap: 8px; padding: 10px 0 12px; border-bottom: 1px solid var(--hair); }
+.quick .chip { height: 32px; flex: 1; justify-content: center; }
+.preview { font-size: 16px; font-weight: 800; color: var(--done); font-variant-numeric: tabular-nums; }
+.vr { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--hair); }
+.vr:last-child { border-bottom: none; }
+.vr .bx { width: 26px; height: 26px; border-radius: 8px; border: 2px solid var(--ink); background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/70% no-repeat; }
+.vr.off .bx { background: var(--paper); border-color: var(--soft); }
+.vr .tx { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.vr .tx b { font-size: 17px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.vr .tx > span { font-size: 15px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.vr .tx .to { color: var(--ink); font-weight: 800; }
+.vr.off .tx b, .vr.off .tx > span, .vr.off .tag { color: var(--soft); border-color: var(--soft); }
+.vr .ed { height: 32px; padding: 0 12px; border-radius: 999px; border: 2px solid var(--ink); font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; display: inline-flex; align-items: center; }
+.vr.off .ed { border-color: var(--hair); color: var(--soft); }
+.toggle { width: 52px; height: 32px; border-radius: 999px; background: var(--hair); position: relative; flex-shrink: 0; }
+.toggle::after { content: ""; position: absolute; left: 3px; top: 3px; width: 26px; height: 26px; border-radius: 50%; background: var(--paper); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.toggle.on { background: var(--ink); }
+.toggle.on::after { left: 23px; }
+
+/* overlays */
+.dim { position: absolute; inset: 0; background: rgba(17,24,39,.45); z-index: 5; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper); border-radius: 28px 28px 0 0; z-index: 6; padding: 10px 24px 0; display: flex; flex-direction: column; border-top: 2px solid var(--ink); }
+.sheet.dark { background: var(--ink); color: var(--paper); border-top-color: var(--ink); }
+.grab { width: 40px; height: 5px; border-radius: 3px; background: var(--soft); align-self: center; margin-bottom: 14px; flex-shrink: 0; }
+.toast { position: absolute; left: 24px; right: 24px; bottom: 112px; height: 56px; border-radius: 16px; background: var(--ink); color: var(--paper); display: flex; align-items: center; padding: 0 18px; gap: 10px; font-size: 15px; font-weight: 700; z-index: 4; }
+.toast b { margin-left: auto; color: var(--sign); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
+.diff { display: flex; flex-direction: column; }
+.diff .d { display: grid; grid-template-columns: 80px 1fr; gap: 10px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--hair); }
+.diff .d .k { padding-top: 3px; }
+.diff .d b { display: block; font-size: 17px; font-weight: 800; }
+.diff .d > span:last-child { font-size: 15px; font-weight: 600; color: var(--muted); }
+.diff .d s { text-decoration-thickness: 2px; }
+.diff .d .to { color: var(--ink); font-weight: 800; }
+.note { border: 2px solid var(--hair); border-radius: 14px; padding: 12px 14px; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--muted); }
+.note b { color: var(--ink); }
+.wave { height: 54px; display: flex; align-items: center; gap: 4px; justify-content: center; }
+.wave i { width: 5px; border-radius: 3px; background: var(--sign); }
+.mic { width: 72px; height: 72px; border-radius: 50%; background: var(--sign); border: 2px solid var(--paper); display: flex; align-items: center; justify-content: center; }
+
+/* closing */
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.cmpcard { background: var(--paper); border: 2px solid var(--ink); border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px; }
+.cmpcard.pick { background: var(--sign); box-shadow: 6px 6px 0 var(--ink); }
+.cmpcard h3 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+.cmpcard p { margin: 0; font-size: 14.5px; line-height: 1.5; }
+.cmpcard ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.55; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="intro">
+    <span class="kicker">MotionLog · Signage Sprint · Routine editing storyboard</span>
+    <h1>Change the plan.</h1>
+    <p>Four directions for editing the prescribed routine from the Today screen: changing a move's sets, reps, time or band, adding a move, removing one, and reordering. Every frame uses the current routine on <b>Tue · Nov 10</b>, with Bridge and Standing row already logged today.</p>
+    <p>Two rules hold in every direction. <b>Changes start today</b>: History keeps the plan each past day had. <b>Today's logs stay as logged</b>: editing a move you've already done changes the plan, not your log.</p>
+  </header>
+  <div id="sections"></div>
+</div>
+
+<script>
+const STATUS = `<span class="num">9:41</span><svg width="72" height="14" viewBox="0 0 72 14"><g fill="#111827"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/><path d="M33 3.5a10 10 0 0 1 13 0l-1.6 1.7a7.6 7.6 0 0 0-9.8 0Z M35.6 6.6a6.2 6.2 0 0 1 7.8 0l-1.7 1.7a3.8 3.8 0 0 0-4.4 0Z M39.5 13 37.4 10.6a3 3 0 0 1 4.2 0Z"/><rect x="50.5" y="1" width="18" height="12" rx="3.5" fill="none" stroke="#111827" stroke-width="1.4"/><rect x="52.5" y="3" width="14" height="8" rx="2"/><rect x="70" y="5" width="1.6" height="4" rx=".8"/></g></svg>`;
+const STATUS_LIGHT = STATUS.replace(/#111827/g, "#FFFFFF");
+const NAV = `<nav class="nav"><span class="on">TODAY</span><span>HISTORY</span><span>PROFILE</span></nav>`;
+const BACK = t => `<div class="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>${t}</div>`;
+const PENCIL = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>`;
+const MIC = c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>`;
+
+const MOVES = [
+  { name: "Bridge", meta: "3 × 45 sec", done: true, res: "3 × 45s" },
+  { name: "Standing row", meta: "3 × 10 · Red band", done: true, res: "3 × 10" },
+  { name: "Heel raise", meta: "2 × 12" },
+  { name: "Clamshell", meta: "2 × 10 · Green band" },
+];
+
+const phone = (inner, o = {}) => `<div class="phone"${o.dark ? ' style="background:var(--ink);color:var(--paper)"' : ""}><div class="status">${o.dark ? STATUS_LIGHT : STATUS}</div><div class="screen" style="padding-top:${o.pt ?? 22}px">${inner}</div>${o.nav === false ? "" : NAV}${o.over || ""}<div class="home-ind"${o.dark ? ' style="background:#fff"' : ""}></div></div>`;
+
+function todayHead(right = "", sub = "") {
+  return `<span class="eyebrow">Tue · Nov 10</span>
+    <div class="topbar" style="padding-top:6px"><h1 class="display">Let’s move.</h1>${right}</div>
+    <div class="card" style="margin-top:20px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between">
+      <div class="stack" style="gap:6px"><span class="label">Today’s routine</span><span style="font-size:27px; font-weight:800; letter-spacing:-.03em">2 moves to go</span><span style="font-size:15px; font-weight:500">2 logged, keep going</span></div>
+      <div class="num" style="width:84px;height:84px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800">2/4</div>
+    </div>${sub}
+    <div class="rule" style="margin-top:${sub ? 14 : 22}px"></div>`;
+}
+function row(m, o = {}) {
+  const lead = o.lead ?? `<span class="tick${m.done ? " on" : ""}"></span>`;
+  const right = o.right ?? (m.done ? `<span class="res">${m.res}</span>` : `<span class="chev"></span>`);
+  return `<div class="item${o.cls ? " " + o.cls : ""}">${lead}<span class="txt"><span class="name">${o.name ?? m.name}${o.tag || ""}</span><span class="meta">${o.meta ?? m.meta}</span></span>${right}</div>`;
+}
+const stepper = (lb, v, sub = "", chg = false) => `<div class="stepper"><span class="lb">${lb}${sub ? `<small>${sub}</small>` : ""}</span><span class="ctl"><span class="sbtn">−</span><span class="sval${chg ? " chg" : ""}">${v}</span><span class="sbtn">+</span></span></div>`;
+const seg = (opts, on, cls = "seg2") => `<div class="${cls}">${opts.map(o => `<span${o === on ? ' class="on"' : ""}>${o}</span>`).join("")}</div>`;
+const stepperU = (lb, v, unit, sub = "", chg = false) => `<div class="stepper"><span class="lb">${lb}${sub ? `<small>${sub}</small>` : ""}</span><span class="ctl"><span class="sbtn">−</span><span class="sval${chg ? " chg" : ""}">${v}<small>${unit}</small></span><span class="sbtn">+</span></span></div>`;
+const quickTimes = on => `<div class="quick">${["15s","30s","45s","60s"].map(t => `<span class="chip${t === on ? " on" : ""}">${t}</span>`).join("")}</div>`;
+const sideRow = on => `<div style="display:flex; justify-content:space-between; align-items:center; padding-top:14px"><span style="font-size:16px; font-weight:800">Each side</span><span class="toggle${on ? " on" : ""}"></span></div>`;
+// Edit-move sheet: count by Reps or Time, then a separate Resistance choice (None / Band / Weight) that works with either.
+const BACK_ICON = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>`;
+function editSheet(o) {
+  const count = o.mode === "Time"
+    ? stepperU("Time per set", o.time, "sec", o.timeWas ? "was " + o.timeWas : "", !!o.timeWas) + quickTimes(o.time + "s")
+    : stepper("Reps per set", o.reps, o.repsWas ? "was " + o.repsWas : "", !!o.repsWas);
+  const load = o.load === "Band" ? `<div style="margin-top:12px">${bands(o.band)}</div>`
+    : o.load === "Weight" ? `<div class="stepper" style="border-bottom:none"><span class="lb">Weight<small>${o.weightWas ? "was " + o.weightWas : "per set"}</small></span><span class="ctl" style="gap:10px"><span class="sbtn">−</span><span class="sval${o.weightWas !== undefined ? " chg" : ""}">${o.weight}</span><span class="sbtn">+</span><span class="unit"><span class="on">lb</span><span>kg</span></span></span></div>` : "";
+  const z = o.stacked ? ' style="z-index:7"' : "";
+  return `<div class="dim"${z}></div><div class="sheet" style="top:${o.top ?? 150}px${o.stacked ? "; z-index:8" : ""}">
+      <div class="grab"></div>
+      ${o.back ? `<div class="back" style="height:34px; margin:-4px 0 4px">${BACK_ICON}${o.back}</div>` : `<span class="label m">${o.label ?? "Edit move"}</span>`}
+      <span style="font-size:28px;font-weight:800;letter-spacing:-.03em;margin-top:2px">${o.name}</span>
+      <span class="preview" style="margin-top:2px">${o.preview}</span>
+      <div style="margin-top:14px">${seg(["Reps", "Time"], o.mode)}</div>
+      <div style="margin-top:4px">${stepper("Sets", o.sets, o.setsWas ? "was " + o.setsWas : "", !!o.setsWas)}${count}</div>
+      <span class="label m" style="margin-top:14px">Resistance</span>
+      <div style="margin-top:8px">${seg(["None", "Band", "Weight"], o.load, "seg3")}</div>
+      ${load}
+      ${sideRow(o.side)}
+      ${o.noButtons ? "" : `<div style="margin-top:18px"><div class="btn">${o.save ?? "Save move"}</div></div>
+      <div style="text-align:center; padding-top:14px"><span class="link">${o.remove ?? "Remove from plan"}</span></div>`}
+    </div>`;
+}
+const editingBg = `<span class="eyebrow">Editing · starts today</span><div class="topbar" style="padding-top:6px"><h1 class="display">Your moves.</h1></div>`;
+const bands = sel => `<div class="chips">${[["None",""],["Yellow","#F8D966"],["Red","#E5484D"],["Green","#30A46C"],["Blue","#4A6CF5"],["Black","#111827"]].map(([n, c]) => `<span class="chip${n === sel ? " on" : ""}">${c ? `<i style="background:${c}"></i>` : ""}${n}</span>`).join("")}</div>`;
+// Voice review: every proposed change can be left out (checkbox) or adjusted by hand (Edit) before applying.
+function voiceReview(o = {}) {
+  const heelTo = o.heelTo ?? "3 × 15";
+  const rows = [
+    { key: "heel", kind: `<span class="tag">Changed</span>`, name: "Heel raise", line: `<s>2 × 12</s> → <span class="to">${heelTo}</span>` },
+    { key: "lift", kind: `<span class="tag fill">Added</span>`, name: "Side-lying leg lift", line: `2 × 10 · each side` },
+    { key: "clam", kind: `<span class="tag" style="border-style:dashed;color:var(--muted);border-color:var(--soft)">Removed</span>`, name: "Clamshell", line: `Was 2 × 10 · Green band` },
+  ];
+  const off = o.off || [];
+  const n = rows.length - off.length;
+  return `<div class="dim"></div><div class="sheet" style="top:${o.top ?? 150}px">
+      <div class="grab"></div>
+      <span class="label m">Here’s what I heard</span>
+      <span style="font-size:30px; font-weight:800; letter-spacing:-.03em; margin-top:4px">3 changes.</span>
+      <p style="margin:10px 0 0; font-size:15px; font-style:italic; line-height:1.4; color:var(--muted)">“Make heel raises three sets of fifteen, and swap clamshells for side-lying leg lifts.”</p>
+      <div class="rule" style="margin-top:16px"></div>
+      <div>${rows.map(r => `<div class="vr${off.includes(r.key) ? " off" : ""}"><span class="bx"></span><span class="tx"><b>${r.name} ${r.kind}</b><span>${r.line}</span></span><span class="ed">Edit</span></div>`).join("")}</div>
+      <div style="margin-top:20px"><div class="btn">Apply ${n} ${n === 1 ? "change" : "changes"}</div></div>
+      <div style="text-align:center; padding-top:14px"><span class="link">Cancel</span></div>
+    </div>`;
+}
+const diffList = `<div class="diff">
+    <div class="d"><span class="k"><span class="tag">Changed</span></span><span><b>Heel raise</b><s>2 × 12</s> → <span class="to">3 × 15</span></span></div>
+    <div class="d"><span class="k"><span class="tag fill">Added</span></span><span><b>Side-lying leg lift</b>2 × 10 · each side</span></div>
+    <div class="d"><span class="k"><span class="tag" style="border-style:dashed;color:var(--muted);border-color:var(--soft)">Removed</span></span><span><b style="color:var(--muted)"><s>Clamshell</s></b>Was 2 × 10 · Green band</span></div>
+  </div>`;
+
+// ---------------- frames ----------------
+const S = [];
+
+S.push({ title: "Direction 1 · Edit mode on Today", lede: "An Edit button turns the Today list into an editable list, the way iOS lists work. Everything happens on one screen: remove, reorder, tap to change, and add at the end.", frames: [
+  { cap: "1·1 · Edit button", body: "Today is unchanged apart from a small Edit pill next to the title. Logged results stay blue on the right.",
+    html: phone(todayHead(`<span class="pill ghost">${PENCIL}Edit</span>`) + `<div class="list">${MOVES.map(m => row(m)).join("")}</div>`) },
+  { cap: "1·2 · Editing the list", body: "The routine card steps aside. Each row gets a remove button on the left and a drag handle on the right, and tapping the name opens its editor. A removed move stays in place, struck through, with Undo until you tap Done. An Add row closes the list. Cancel and Done replace the tab bar.",
+    html: phone(`<span class="eyebrow">Editing · starts today</span>
+      <div class="topbar" style="padding-top:6px"><h1 class="display">Your moves.</h1></div>
+      <div class="rule" style="margin-top:20px"></div>
+      <div class="list">${row(MOVES[0], { lead: `<span class="minus"></span>`, right: `<span class="handle"></span>` })}${row(MOVES[1], { lead: `<span class="minus"></span>`, right: `<span class="handle"></span>` })}${row(MOVES[2], { lead: `<span class="minus"></span>`, right: `<span class="handle"></span>`, meta: "3 × 15", tag: ` <span class="tag">Changed</span>` })}${row(MOVES[3], { lead: `<span class="minus" style="background:var(--soft)"></span>`, cls: "gone", right: `<span class="undo">Undo</span>` })}</div>
+      <div class="addrow"><span class="plus">+</span>Add a move</div>`, { nav: false, over: `<div class="dockbar"><div class="btn ghost">Cancel</div><div class="btn">Done</div></div>` }) },
+  { cap: "1·3 · Change a move", body: "Tapping a move in edit mode raises a sheet. A blue line under the name previews the new prescription as you change it. Reps or Time sets how the move is counted, and Resistance (none, band or weight) is a separate choice that works with either. Remove also lives here.",
+    html: phone(editingBg, { nav: false, over: editSheet({ name: "Heel raise", preview: "3 × 15", mode: "Reps", sets: "3", setsWas: "2", reps: "15", repsWas: "12", load: "None", top: 196 }) }) },
+]});
+
+S.push({ title: "Direction 1 · Edit move: reps or time", lede: "Some moves are counted in reps (3 × 10) and some are held for a time (3 sets of 15 seconds). The sheet switches between the two with one control, and resistance (a band or a weight) stays available either way.", frames: [
+  { cap: "1·4 · Reps with a band", body: "Standing row is counted in reps. Band is selected under Resistance, so the band chips appear. The preview reads the way the row will: 3 × 10 · Red band.",
+    html: phone(editingBg, { nav: false, over: editSheet({ name: "Standing row", preview: "3 × 10 · Red band", mode: "Reps", sets: "3", reps: "10", load: "Band", band: "Red", top: 150 }) }) },
+  { cap: "1·5 · Time with a weight", body: "Bridge switched to Time. The reps stepper becomes Time per set, in 5-second steps, with quick picks for 15, 30, 45 and 60 seconds. Sets stay as they were. Weight is selected, so a weight stepper with an lb/kg switch appears: 3 × 15 sec · 10 lb.",
+    html: phone(editingBg, { nav: false, over: editSheet({ name: "Bridge", preview: "3 × 15 sec · 10 lb", mode: "Time", sets: "3", time: "15", timeWas: "45 sec", load: "Weight", weight: "10", weightWas: "none", top: 96 }) }) },
+  { cap: "1·6 · Back in the list", body: "After Save, the row reads the same as the preview, with the Changed tag. A held move always shows as sets × seconds, so it's clear at a glance which moves are timed.",
+    html: phone(`<span class="eyebrow">Editing · starts today</span>
+      <div class="topbar" style="padding-top:6px"><h1 class="display">Your moves.</h1></div>
+      <div class="rule" style="margin-top:20px"></div>
+      <div class="list">${row(MOVES[0], { lead: `<span class="minus"></span>`, right: `<span class="handle"></span>`, meta: "3 × 15 sec · 10 lb", tag: ` <span class="tag">Changed</span>` })}${row(MOVES[1], { lead: `<span class="minus"></span>`, right: `<span class="handle"></span>` })}${row(MOVES[2], { lead: `<span class="minus"></span>`, right: `<span class="handle"></span>` })}${row(MOVES[3], { lead: `<span class="minus"></span>`, right: `<span class="handle"></span>` })}</div>
+      <div class="addrow"><span class="plus">+</span>Add a move</div>`, { nav: false, over: `<div class="dockbar"><div class="btn ghost">Cancel</div><div class="btn">Done</div></div>` }) },
+]});
+
+S.push({ title: "Direction 2 · A separate plan screen", lede: "Today stays focused on doing the routine. A link takes you to a dedicated plan screen where moves open full-page editors, and saving shows a summary of the changes first.", frames: [
+  { cap: "2·1 · Edit plan link", body: "A quiet line under the routine card shows where the plan came from, with an Edit plan link. Nothing about Today's rows changes.",
+    html: phone(todayHead("", `<div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px"><span style="font-size:14px; font-weight:600; color:var(--muted)">4 moves · plan set Nov 2</span><span class="link" style="font-size:14px">Edit plan →</span></div>`) + `<div class="list">${MOVES.map(m => row(m)).join("")}</div>`) },
+  { cap: "2·2 · Your plan", body: "The whole plan in order, with numbers. Rows open their editors, and handles reorder. Add a move is the yellow highlight on this screen. A footnote says that edits start today.",
+    html: phone(BACK("Today") + `<span class="eyebrow" style="padding-top:12px">Set Nov 2 · 4 moves</span><h1 class="display" style="padding-top:6px">Your plan.</h1>
+      <div class="rule" style="margin-top:20px"></div>
+      <div class="list">${MOVES.map((m, i) => row(m, { lead: `<span class="badge">${i + 1}</span>`, right: `<span class="handle" style="margin-right:4px"></span><span class="chev"></span>` })).join("")}</div>
+      <div style="margin-top:22px"><div class="btn">+ Add a move</div></div>
+      <p style="margin:16px 0 0; font-size:14px; line-height:1.45; color:var(--muted)">Edits start today. Past days in History keep the plan they had.</p>`, { pt: 8, nav: false }) },
+  { cap: "2·3 · Full-page move editor", body: "More room for everything a prescription holds: reps or time, sets, band or weight, each side, and the PT's cue for the move. Remove sits at the bottom, away from Save.",
+    html: phone(BACK("Your plan") + `<span class="eyebrow" style="padding-top:12px">Move 3 of 4</span><h1 class="display" style="padding-top:6px">Heel raise.</h1>
+      <div class="seg2" style="margin-top:18px"><span class="on">Reps</span><span>Time</span></div>
+      <div style="margin-top:6px">${stepper("Sets", "3", "", true)}${stepper("Reps per set", "15", "", true)}</div>
+      <span class="label m" style="margin-top:14px">Band or weight</span><div style="margin-top:8px">${bands("None")}</div>
+      <span class="label m" style="margin-top:16px">Cue</span>
+      <div class="field" style="margin-top:8px">Lower slowly, 3 seconds down.</div>
+      <div style="margin-top:20px"><div class="btn sm">Save</div></div>
+      <div style="text-align:center; padding-top:14px"><span class="link">Remove move</span></div>`, { pt: 8, nav: false }) },
+  { cap: "2·4 · Review before saving", body: "Back on the plan, Save shows every change in one place. The summary repeats the rule that matters: it starts today and History is untouched. This summary could also close Direction 1's Done.",
+    html: phone(BACK("Your plan") + `<span class="eyebrow" style="padding-top:12px">Before you save</span><h1 class="display" style="padding-top:6px">3 changes.</h1>
+      <div class="rule" style="margin-top:20px"></div>${diffList}
+      <div class="note" style="margin-top:18px">Starts <b>today, Tue Nov 10</b>. Your logs for Bridge and Standing row stay as they are. Past days keep their old plan.</div>
+      <div style="margin-top:22px"><div class="btn">Save changes</div></div>
+      <div style="margin-top:12px"><div class="btn ghost sm">Keep editing</div></div>`, { pt: 8, nav: false }) },
+]});
+
+S.push({ title: "Direction 3 · Edit right on the row", lede: "No mode and no extra screen. Swipe a row for Edit and Remove, change numbers inline, and undo from a toast. Drag to reorder already works on Today.", frames: [
+  { cap: "3·1 · Swipe for actions", body: "Swiping a row left reveals Edit (yellow) and Remove (ink). It's familiar from Mail, but hidden: people won't find it unless shown once.",
+    html: phone(todayHead() + `<div class="list">${row(MOVES[0])}${row(MOVES[1])}
+      <div class="swipewrap">${row(MOVES[2])}<div class="actions"><span class="ed">${PENCIL}Edit</span><span class="rm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>Remove</span></div></div>
+      ${row(MOVES[3])}</div>`) },
+  { cap: "3·2 · Inline editor", body: "Edit opens the row in place with compact steppers and band chips. The list around it stays put, so you keep your place. Save and Cancel are right there.",
+    html: phone(todayHead() + `<div class="list">${row(MOVES[0])}${row(MOVES[1])}
+      <div class="item" style="flex-direction:column; align-items:stretch; gap:14px; padding:16px 0 18px">
+        <div style="display:flex; align-items:center; gap:14px"><span class="tick"></span><span class="txt"><span class="name">Heel raise</span><span class="meta" style="color:var(--done); font-weight:700">3 × 15 · was 2 × 12</span></span></div>
+        <div style="display:flex; gap:22px; padding-left:50px"><span class="stack" style="gap:4px"><span class="label m">Sets</span><span class="mini-step"><span class="sbtn">−</span><span class="sval chg">3</span><span class="sbtn">+</span></span></span><span class="stack" style="gap:4px"><span class="label m">Reps</span><span class="mini-step"><span class="sbtn">−</span><span class="sval chg">15</span><span class="sbtn">+</span></span></span></div>
+        <div style="display:flex; gap:10px; padding-left:50px"><span class="pill" style="height:38px">Save</span><span class="pill ghost" style="height:38px">Cancel</span></div>
+      </div></div>`) },
+  { cap: "3·3 · Removed, with Undo", body: "Remove takes effect right away, and a toast offers Undo for a few seconds. A permanent Add a move row ends the list, so adding is always one tap away.",
+    html: phone(todayHead() + `<div class="list">${row(MOVES[0])}${row(MOVES[1])}${row(MOVES[2], { meta: "3 × 15" })}</div><div class="addrow"><span class="plus">+</span>Add a move</div>`, { over: `<div class="toast">Clamshell removed<b>Undo</b></div>` }) },
+]});
+
+S.push({ title: "Direction 4 · Say the change", lede: "Builds on voice logging. Describe the change the way your PT said it, and MotionLog turns it into a list of changes you confirm. This direction handles several edits at once best.", frames: [
+  { cap: "4·1 · Listening", body: "A mic button next to the title starts a plan change. Tapping it opens a dark listening sheet, the same treatment as voice logging, with a live transcript.",
+    html: phone(todayHead(`<span class="pill ghost" style="width:42px; height:42px; padding:0" aria-label="Change plan by voice">${MIC("#111827")}</span>`), { over: `<div class="dim"></div><div class="sheet dark" style="top:330px; align-items:center; text-align:center">
+      <div class="grab" style="background:rgba(255,255,255,.35)"></div>
+      <span class="label" style="color:var(--sign)">Listening</span>
+      <p style="margin:14px 0 0; font-size:24px; font-weight:800; letter-spacing:-.02em; line-height:1.25">“Make heel raises three sets of fifteen, and swap clamshells for side-lying leg lifts…”</p>
+      <div class="wave" style="margin-top:22px">${[14,30,22,44,18,36,50,26,40,16,32,24,12].map(h => `<i style="height:${h}px"></i>`).join("")}</div>
+      <div class="mic" style="margin-top:20px"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="#111827"/></svg></div>
+      <span style="font-size:13px; font-weight:700; opacity:.7; margin-top:10px">Tap to stop</span>
+    </div>`, nav: true }) },
+  { cap: "4·2 · Confirm what it heard", body: "Your words become a list of proposed changes. Each one has a checkbox (on by default) and an Edit button, so you can accept all of them, leave one out, or adjust one before anything changes. The Apply button counts what will be applied.",
+    html: phone(todayHead(), { over: voiceReview() }) },
+  { cap: "4·3 · Edit one by hand", body: "Edit on Heel raise pushes a second page inside the same sheet: the review slides off to the left and the editor (the same controls as Direction 1) slides in from the right. The sheet keeps its height, so nothing jumps. It starts from what was heard (3 × 15). Here the user changes sets back to 2. There are no Save or Remove buttons: edits take effect as you make them, and ‹ Changes at the top left (or a swipe in from the left edge) slides back to the review. Like the app’s other back buttons, it names where you’re going. Leaving the change out is the review's checkbox.",
+    html: phone(todayHead(), { over: editSheet({ back: "Changes", name: "Heel raise", preview: "2 × 15", mode: "Reps", sets: "2", reps: "15", repsWas: "12", load: "None", top: 150, noButtons: true }) }) },
+  { cap: "4·4 · Back to the review", body: "Heel raise now shows your latest numbers, 2 × 15, the same way as the other changes: no special label and no trace of what was first heard. The struck value is the current plan. Apply 3 changes applies everything as listed.",
+    html: phone(todayHead(), { over: voiceReview({ heelTo: "2 × 15" }) }) },
+  { cap: "4·5 · Or leave one out", body: "Unchecking a change greys it out and the Apply count drops. Here Clamshell stays in the plan and only the other two changes apply. You can still edit Clamshell by hand later in edit mode.",
+    html: phone(todayHead(), { over: voiceReview({ off: ["clam"] }) }) },
+  { cap: "4·6 · Plan updated", body: "Today redraws with small Changed and New tags that fade after the day. A toast offers Undo for the whole batch, including the change you edited by hand.",
+    html: phone(todayHead() + `<div class="list">${row(MOVES[0])}${row(MOVES[1])}${row(MOVES[2], { meta: "2 × 15", tag: ` <span class="tag">Changed</span>` })}${row({ name: "Side-lying leg lift", meta: "2 × 10 · each side" }, { tag: ` <span class="tag fill">New</span>` })}</div>`, { over: `<div class="toast">Plan updated · 3 changes<b>Undo</b></div>` }) },
+]});
+
+S.push({ title: "Shared · Adding a move", lede: "Every direction needs the same add flow: pick a move, then set its prescription.", frames: [
+  { cap: "S·1 · Pick a move", body: "A tall sheet with search at the top. Moves you've done before come first, then common PT moves. Create your own covers anything missing.",
+    html: phone(todayHead(), { over: `<div class="dim"></div><div class="sheet" style="top:96px">
+      <div class="grab"></div>
+      <div class="topbar"><span style="font-size:30px; font-weight:800; letter-spacing:-.03em">Add a move</span><span class="pill ghost" style="height:30px">Close</span></div>
+      <div class="field" style="margin-top:16px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F6676" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span class="ph">Search moves</span></div>
+      <span class="label m" style="margin-top:20px">Done before</span>
+      <div class="list">${["Wall sit|Time","Single-leg balance|Time"].map(x => { const [n, t] = x.split("|"); return `<div class="item" style="padding:12px 0"><span class="txt"><span class="name" style="font-size:17px">${n}</span><span class="meta" style="font-size:14px">${t}</span></span><span class="plus">+</span></div>`; }).join("")}</div>
+      <span class="label m" style="margin-top:18px">Common moves</span>
+      <div class="list">${["Side-lying leg lift|Reps · each side","Bird dog|Reps · each side","Mini squat|Reps"].map(x => { const [n, t] = x.split("|"); return `<div class="item" style="padding:12px 0"><span class="txt"><span class="name" style="font-size:17px">${n}</span><span class="meta" style="font-size:14px">${t}</span></span><span class="plus">+</span></div>`; }).join("")}</div>
+      <div class="addrow" style="margin-top:14px"><span class="plus" style="border-style:dashed">+</span>Create your own move</div>
+    </div>` }) },
+  { cap: "S·2 · Set the prescription", body: "Choosing a move steps forward in the same sheet. It defaults to the move's usual tracking (reps or time) with sensible starting numbers, so most people only tap Add.",
+    html: phone(todayHead(), { over: `<div class="dim"></div><div class="sheet" style="top:196px">
+      <div class="grab"></div>
+      ${BACK("Add a move").replace('class="back"', 'class="back" style="height:32px"')}
+      <span style="font-size:30px; font-weight:800; letter-spacing:-.03em; margin-top:4px">Side-lying leg lift</span>
+      <div class="seg2" style="margin-top:16px"><span class="on">Reps</span><span>Time</span></div>
+      <div style="margin-top:4px">${stepper("Sets", "2")}${stepper("Reps per set", "10")}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px"><span style="font-size:16px; font-weight:800">Each side</span><span class="toggle on"></span></div>
+      <span class="label m" style="margin-top:16px">Band</span><div style="margin-top:8px">${bands("None")}</div>
+      <div style="margin-top:22px"><div class="btn">Add to plan</div></div>
+    </div>` }) },
+]});
+
+const host = document.getElementById("sections");
+host.innerHTML = S.map(sec => `<section class="stage"><div class="stage-head"><h2>${sec.title}</h2><p>${sec.lede}</p></div><div class="row">${sec.frames.map(f => `<figure>${f.html}<figcaption><b>${f.cap}</b><small>${f.body}</small></figcaption></figure>`).join("")}</div></section>`).join("") + `
+<section class="stage">
+  <div class="stage-head"><h2>How they compare</h2><p>The add flow and the review summary can go with any direction.</p></div>
+  <div class="compare">
+    <div class="cmpcard pick"><span class="label">Suggested starting point</span><h3>1 · Edit mode, with 2·4's review on Done</h3><p>Visible (an Edit button, not a hidden gesture), all on one screen, and it uses the iOS editing pattern people already know. Showing the change summary on Done catches mistakes before they reach History.</p></div>
+    <div class="cmpcard"><span class="label">If plans change rarely</span><h3>2 · Separate plan screen</h3><p>Keeps Today clean and gives each move room for cues and weights. Costs an extra screen and a back-and-forth for a quick tweak.</p></div>
+    <div class="cmpcard"><span class="label">Fastest for one tweak</span><h3>3 · Edit on the row</h3><p>Fewest taps for “bump heel raises to 15”. Swipe actions are hard to discover, and inline steppers crowd the row.</p></div>
+    <div class="cmpcard"><span class="label">A layer on top</span><h3>4 · Say the change</h3><p>Fits how PTs hand out changes (“do three sets of fifteen now”) and uses the existing voice parsing. Best added on top of a manual direction, not instead of one.</p></div>
+  </div>
+  <div class="cmpcard" style="max-width:900px">
+    <h3>Open questions</h3>
+    <ul>
+      <li><b>Who can edit?</b> The routine belongs to you in the database today. If a PT will also edit it later, should your own changes be labeled as yours?</li>
+      <li><b>Versioning.</b> “Changes start today” fits how the app already works, where the latest routine stays active until replaced: saving could create a new routine dated today rather than editing the old one, so History keeps the old prescription.</li>
+      <li><b>Moves already logged today.</b> If you change Standing row after logging 3 × 10, does today's on-target check use the old plan or the new one? These frames assume the new plan applies from tomorrow for anything already logged.</li>
+      <li><b>Exercise details.</b> Instructions, photos and the PT note live on the exercise. Should custom moves get those fields, or just a name?</li>
+    </ul>
+  </div>
+</section>`;
+</script>
+</body>
+</html>
