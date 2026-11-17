@@ -8,7 +8,7 @@ It renders fixed utterances with local Kokoro voices, sends the cached audio thr
 
 Every run produces:
 
-- `summary.md`, printed in the GitHub Actions log and appended to the job summary.
+- `summary.md`, printed in the GitHub Actions log. A separate `always()` workflow step publishes it on the run's **Summary** page even when an evaluation gate fails.
 - `report.html`, a self-contained downloadable report with expandable failure details.
 - `results.json`, the complete machine-readable evidence.
 - `junit.xml`, for CI test integrations.

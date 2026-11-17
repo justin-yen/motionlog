@@ -92,6 +92,16 @@ jobs:
           PYTHONPATH: evals/audio_to_structure
         run: python -m motionlog_eval.runner --tier "$EVAL_TIER"
 
+      - name: Publish evaluation summary
+        if: always()
+        run: |
+          if [ -f evals/audio_to_structure/output/summary.md ]; then
+            cat evals/audio_to_structure/output/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Evaluation report unavailable" >> "$GITHUB_STEP_SUMMARY"
+            echo "The evaluator did not produce \`summary.md\`. Inspect the job log for the stage that failed." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Show transcription service log on failure
         if: failure()
         run: tail -200 /tmp/motionlog-transcription.log || true

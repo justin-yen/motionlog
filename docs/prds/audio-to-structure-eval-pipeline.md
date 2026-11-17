@@ -2,7 +2,7 @@
 
 **Status:** MVP implemented; initial smoke baseline recorded and currently below release thresholds
 
-**Last updated:** November 16, 2026
+**Last updated:** November 17, 2026
 
 **Owner:** MotionLog
 
@@ -208,7 +208,8 @@ flowchart TD
     R -->|Yes| S[Exit 0 / CI passes]
     R -->|No| T[Exit nonzero / CI fails]
 
-    Q --> U[Markdown log and GitHub job summary]
+    Q --> U[Write and print summary.md]
+    U --> U2[Always-run workflow step<br/>publishes GitHub job summary]
     Q --> V[Self-contained HTML artifact]
     Q --> W[results.json]
     Q --> X[junit.xml]
@@ -438,7 +439,7 @@ One inconsistent noncritical notes rendering may be tolerated. Any variation in 
 The pipeline writes:
 
 - `results.json`: complete run records and aggregate metrics.
-- `summary.md`: tier status, release gates, and a concise failure table; it is printed in the action log and appended to the GitHub job summary.
+- `summary.md`: tier status, release gates, and a concise failure table. The evaluator prints it in the action log, then a separate `always()` workflow step appends the completed file to the GitHub job summary. Keeping publication outside the evaluator ensures the summary is rendered even when the evaluator exits nonzero because a release gate failed.
 - `report.html`: a self-contained, responsive report with expandable expected/actual values, utterances, transcripts, and failure details.
 - `junit.xml`: CI-native per-fixture and tier-gate results.
 
@@ -489,11 +490,11 @@ Completed:
 - The metrics and tier gates in this PRD are implemented.
 - Markdown, self-contained HTML, JSON, and JUnit XML reports are produced.
 - Failed runs retain enough evidence to distinguish audio, transcription, authentication, parser, schema, and scoring failures.
-- The GitHub Actions workflow runs unit tests, selects all three tiers, appends the Markdown job summary, and uploads the report artifact even on failure.
+- The GitHub Actions workflow runs unit tests, selects all three tiers, publishes the Markdown job summary from a separate `always()` step, and uploads the report artifact even on failure.
 
 Remaining before the evaluation system is fully operational:
 
-- Configure the four required GitHub Actions secrets and verify a remote workflow run. The local GitHub CLI session was not authenticated during implementation, so remote execution has not yet been confirmed.
+- Verify the separate always-run summary publication step in a remote workflow run. The four required GitHub Actions secrets are configured, and the first remote smoke run completed all 48 cases and uploaded its artifact on November 16, 2026.
 - Run and review the 360-case full tier and 90-call stability tier.
 - Populate or cache all 360 audio fixtures; only the smoke fixtures have been generated so far.
 - Record the parser prompt/schema version and configured model in report metadata.

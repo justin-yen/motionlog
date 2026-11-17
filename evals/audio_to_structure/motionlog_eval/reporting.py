@@ -4,7 +4,6 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from html import escape
 import json
-import os
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
@@ -141,10 +140,6 @@ def write_reports(output: Path, tier: str, results: list[RunResult], metrics: di
     (output / "report.html").write_text(_html_report(payload))
     _write_junit(output / "junit.xml", tier, results, gates)
     print(markdown)
-    summary_path = os.getenv("GITHUB_STEP_SUMMARY")
-    if summary_path:
-        with Path(summary_path).open("a") as handle:
-            handle.write(markdown)
 
 
 def git_sha() -> str:
