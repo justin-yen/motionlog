@@ -8,7 +8,7 @@ It renders fixed utterances with local Kokoro voices, sends the cached audio thr
 
 Every run produces:
 
-- `summary.md`, printed in the GitHub Actions log. A separate `always()` workflow step publishes it on the run's **Summary** page even when an evaluation gate fails.
+- `summary.md`, printed in the GitHub Actions log with a test-case table and a field-by-field expected-versus-actual table for every failed fixture. The test-case table identifies the category, exercise, tracking mode, utterance variant, synthetic voice, intended utterance, Whisper transcript, and failure reason. A separate `always()` workflow step publishes it on the run's **Summary** page even when an evaluation gate fails.
 - `report.html`, a self-contained downloadable report with expandable failure details.
 - `results.json`, the complete machine-readable evidence.
 - `junit.xml`, for CI test integrations.

@@ -269,17 +269,54 @@ def _markdown_report(payload: dict) -> str:
     if not failures:
         lines.append("No failed fixtures.")
     else:
-        lines.append("| Fixture | Stage | Details |")
-        lines.append("|---|---|---|")
         for item in failures[:25]:
             differences = item.get("score", {}).get("field_differences", []) if item.get("score") else []
             details = item.get("error") or "; ".join(differences) or "Did not meet exact-match requirements"
-            details = details.replace("|", "\\|").replace("\n", " ")[:240]
-            lines.append(f"| `{item['fixture']['id']}` | {item.get('error_stage') or 'scoring'} | {details} |")
+            lines.extend([
+                f"### `{item['fixture']['id']}`",
+                "",
+                "#### Test case",
+                "",
+                "| Attribute | Value |",
+                "|---|---|",
+                f"| Fixture | `{_markdown_text(item['fixture']['id'])}` |",
+                f"| Category | `{_markdown_text(item['fixture']['category'])}` |",
+                f"| Exercise | {_markdown_text(item['fixture']['exercise']['name'])} |",
+                f"| Tracking mode | `{_markdown_text(item['fixture']['exercise'].get('tracking_mode') or 'unspecified')}` |",
+                f"| Utterance variant | `{_markdown_text(item['fixture']['variant'])}` |",
+                f"| Synthetic voice | `{_markdown_text(item['fixture']['voice'])}` |",
+                f"| Intended utterance | {_markdown_text(item['fixture']['utterance'])} |",
+                f"| Whisper transcript | {_markdown_text(item.get('transcript') or 'Unavailable')} |",
+                f"| Failure stage | `{_markdown_text(item.get('error_stage') or 'scoring')}` |",
+                f"| Failure reason | {_markdown_text(details)} |",
+                "",
+                "#### Structured output",
+                "",
+                "| Field | Expected | Actual |",
+                "|---|---|---|",
+            ])
+            expected = item["fixture"]["expected"]
+            actual = item.get("actual")
+            for field, expected_value in expected.items():
+                actual_value = actual.get(field) if actual is not None else None
+                lines.append(
+                    f"| `{field}` | `{_markdown_value(expected_value)}` | `{_markdown_value(actual_value, unavailable=actual is None)}` |"
+                )
+            lines.append("")
         if len(failures) > 25:
             lines.append(f"\nShowing 25 of {len(failures)} failures. Download the HTML report for all details.")
     lines.append("")
     return "\n".join(lines)
+
+
+def _markdown_text(value: str) -> str:
+    return value.replace("|", "\\|").replace("\n", " ")
+
+
+def _markdown_value(value: object, unavailable: bool = False) -> str:
+    if unavailable:
+        return "unavailable"
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":")).replace("|", "\\|").replace("`", "\\`")
 
 
 def _html_report(payload: dict) -> str:

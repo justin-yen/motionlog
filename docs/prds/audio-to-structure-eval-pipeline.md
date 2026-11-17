@@ -198,7 +198,7 @@ flowchart TD
     I --> J[Capture actual transcript]
     J --> K[Authenticate Supabase test user]
     K --> L[POST transcript and exercise context<br/>to parse-exercise-log]
-    L --> M[OpenAI-backed structured extraction]
+    L --> M[OpenAI-backed structured extraction<br/>semantic evidence and negation rules]
     M --> N[Pydantic version 1 schema validation]
     N --> O[Normalize and deterministically score<br/>fields, ambiguity, and note routing]
 
@@ -208,7 +208,7 @@ flowchart TD
     R -->|Yes| S[Exit 0 / CI passes]
     R -->|No| T[Exit nonzero / CI fails]
 
-    Q --> U[Write and print summary.md]
+    Q --> U[Write and print summary.md<br/>with test context and expected vs actual tables]
     U --> U2[Always-run workflow step<br/>publishes GitHub job summary]
     Q --> V[Self-contained HTML artifact]
     Q --> W[results.json]
@@ -222,6 +222,8 @@ flowchart TD
 ```
 
 The runner must not silently use the local deterministic parser if the remote parser fails. A fallback would hide availability or model regressions. Failures must be recorded against the stage that produced them.
+
+The hosted extraction instructions explicitly require semantic evidence for every numeric field. Bare numbers remain unstructured, set count is never inferred from a repetition report, and numeric phrases inside negations, hypotheticals, examples, quotations, or record-writing instructions are ignored. These rules address the first smoke baseline's ambiguity and adversarial false-fill failures while preserving affirmative statements such as "pain was five after the exercise."
 
 ### Current baseline
 
@@ -439,7 +441,7 @@ One inconsistent noncritical notes rendering may be tolerated. Any variation in 
 The pipeline writes:
 
 - `results.json`: complete run records and aggregate metrics.
-- `summary.md`: tier status, release gates, and a concise failure table. The evaluator prints it in the action log, then a separate `always()` workflow step appends the completed file to the GitHub job summary. Keeping publication outside the evaluator ensures the summary is rendered even when the evaluator exits nonzero because a release gate failed.
+- `summary.md`: tier status, release gates, and a readable section for every failed fixture. Each failure has a test-case table identifying its category, exercise, tracking mode, utterance variant, synthetic voice, intended utterance, Whisper transcript, failure stage, and failure reason. A second table compares every expected and actual structured field. The evaluator prints the report in the action log, then a separate `always()` workflow step appends the completed file to the GitHub job summary. Keeping publication outside the evaluator ensures the summary is rendered even when the evaluator exits nonzero because a release gate failed.
 - `report.html`: a self-contained, responsive report with expandable expected/actual values, utterances, transcripts, and failure details.
 - `junit.xml`: CI-native per-fixture and tier-gate results.
 
@@ -488,7 +490,7 @@ Completed:
 - Kokoro rendering, M4A normalization, audio checksums, local Whisper transcription, Supabase test-user authentication, and the hosted parser path have been exercised locally.
 - Expected and actual version 1 outputs are schema validated and normalized.
 - The metrics and tier gates in this PRD are implemented.
-- Markdown, self-contained HTML, JSON, and JUnit XML reports are produced.
+- Markdown, self-contained HTML, JSON, and JUnit XML reports are produced. Markdown and HTML failure views both expose expected and actual structured values for direct comparison.
 - Failed runs retain enough evidence to distinguish audio, transcription, authentication, parser, schema, and scoring failures.
 - The GitHub Actions workflow runs unit tests, selects all three tiers, publishes the Markdown job summary from a separate `always()` step, and uploads the report artifact even on failure.
 
