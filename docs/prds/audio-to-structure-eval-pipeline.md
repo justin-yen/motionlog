@@ -1,6 +1,6 @@
 # Audio-to-structure evaluation pipeline PRD
 
-**Status:** MVP implemented; initial smoke baseline recorded and currently below release thresholds
+**Status:** MVP implemented; pull-request smoke tier passing, full and stability baselines pending
 
 **Last updated:** November 17, 2026
 
@@ -227,17 +227,22 @@ The hosted extraction instructions explicitly require semantic evidence for ever
 
 ### Current baseline
 
-The first local smoke run on November 16, 2026 completed all 48 audio-to-structure calls with schema-valid responses. It did not pass the release gates:
+The first local smoke run on November 16, 2026 completed all 48 audio-to-structure calls with schema-valid responses but failed six fixtures. Four failures guessed a field for an ambiguous spoken “ten,” and two adversarial fixtures incorrectly populated pain as zero.
+
+After adding semantic-evidence, bare-number, and negation rules to the hosted extraction instructions, GitHub Actions run [44027654647](https://github.com/justin-yen/motionlog/actions/runs/44027654647) passed the complete smoke tier on November 17, 2026:
 
 | Metric | Observed |
 |---|---:|
 | Pipeline completion | 100% (48/48) |
 | Schema-valid responses | 100% |
-| Slot F1 | 97.7% |
-| Exact form match | 87.5% |
-| Failed fixtures | 6 |
+| Slot F1 | 100% |
+| Exact form match | 100% |
+| Critical constraint violations | 0 |
+| False-fill rate | 0% |
+| Ambiguity blank rate | 100% |
+| Failed fixtures | 0 |
 
-Four failures guessed a field for an ambiguous spoken “ten.” Two adversarial fixtures incorrectly populated pain as zero. These remain regression cases; the thresholds were not weakened to make the initial baseline pass.
+The original six failures remain regression cases, and no release threshold was weakened to produce the passing result.
 
 ### Documentation maintenance requirement
 
@@ -496,7 +501,6 @@ Completed:
 
 Remaining before the evaluation system is fully operational:
 
-- Verify the separate always-run summary publication step in a remote workflow run. The four required GitHub Actions secrets are configured, and the first remote smoke run completed all 48 cases and uploaded its artifact on November 16, 2026.
 - Run and review the 360-case full tier and 90-call stability tier.
 - Populate or cache all 360 audio fixtures; only the smoke fixtures have been generated so far.
 - Record the parser prompt/schema version and configured model in report metadata.
