@@ -9,7 +9,7 @@ actor SupabasePTRepository: PTRepository {
 
     func todayRoutine() async throws -> Routine {
         let day = LocalDateKey.string(for: .now)
-        let query = "routines?scheduled_for=lte.\(day)&select=id,title,scheduled_for,routine_items(id,position,target_sets,target_reps,target_duration_seconds,target_band_resistance,target_weight_value,target_weight_unit,prescription_notes,exercise:exercises(id,name,tracking_mode,instructions,image_path,video_url,pt_note))&order=scheduled_for.desc&routine_items.order=position.asc&limit=1"
+        let query = "routines?scheduled_for=lte.\(day)&select=id,title,scheduled_for,routine_items!inner(id,position,target_sets,target_reps,target_duration_seconds,target_band_resistance,target_weight_value,target_weight_unit,prescription_notes,exercise:exercises(id,name,tracking_mode,instructions,image_path,video_url,pt_note))&order=scheduled_for.desc&routine_items.order=position.asc&limit=1"
         let data = try await client.rest(path: query)
         let decoder = JSONDecoder.supabase
         guard let dto = try decoder.decode([RoutineDTO].self, from: data).first else {
@@ -57,22 +57,160 @@ actor SupabasePTRepository: PTRepository {
         return row.model(exerciseName: draft.exercise.name, hasAudio: draft.localAudioURL != nil)
     }
 
-    func history() async throws -> [ExerciseLog] {
-        let data = try await client.rest(path: "exercise_logs?select=*,exercise:exercises(name)&order=performed_at.desc")
+    func logs(from start: Date, to end: Date) async throws -> [ExerciseLog] {
+        // A bounded range lets Postgres use the (owner_id, performed_at) index instead of reading every log.
+        let iso = ISO8601DateFormatter()
+        let range = "performed_at=gte.\(iso.string(from: start))&performed_at=lt.\(iso.string(from: end))"
+        let data = try await client.rest(path: "exercise_logs?select=*,exercise:exercises(name)&\(range)&order=performed_at.desc")
         return try JSONDecoder.supabase.decode([ExerciseLogRow].self, from: data).map {
             $0.model(exerciseName: $0.exercise?.name ?? "Exercise", hasAudio: false)
         }
     }
 
     func reorder(routineID: UUID, itemIDs: [UUID]) async throws {
+        // Positions are unique per routine, so park every row first, then set the final order.
+        try await setPositions(itemIDs, offset: Self.parkedPositionOffset)
+        try await setPositions(itemIDs, offset: 0)
+    }
+
+    func plans(from start: Date, to end: Date) async throws -> [Routine] {
+        // Two index lookups on (owner_id, scheduled_for): plans that start inside the range, and the
+        // one plan still in force when the range begins. Only a few rows, however long the history.
+        let first = LocalDateKey.string(for: start)
+        let last = LocalDateKey.string(for: end)
+        let select = "select=id,title,scheduled_for,routine_items!inner(\(Self.routineItemColumns))&routine_items.order=position.asc"
+        async let inside = client.rest(path: "routines?\(select)&scheduled_for=gte.\(first)&scheduled_for=lt.\(last)&order=scheduled_for.desc")
+        async let before = client.rest(path: "routines?\(select)&scheduled_for=lt.\(first)&order=scheduled_for.desc&limit=1")
+        let decoder = JSONDecoder.supabase
+        let plans = try decoder.decode([RoutineDTO].self, from: try await inside)
+            + decoder.decode([RoutineDTO].self, from: try await before)
+        return plans.map(\.model)
+    }
+
+    private static let routineItemColumns = "id,position,target_sets,target_reps,target_duration_seconds,target_band_resistance,target_weight_value,target_weight_unit,prescription_notes,exercise:exercises(id,name,tracking_mode,instructions,image_path,video_url,pt_note)"
+
+    func exercises() async throws -> [Exercise] {
+        let data = try await client.rest(path: "exercises?select=id,name,tracking_mode,instructions,image_path,video_url,pt_note&order=name.asc")
+        return try JSONDecoder.supabase.decode([Exercise].self, from: data)
+    }
+
+    func saveRoutine(_ update: RoutineUpdate) async throws -> Routine {
+        guard let session = await client.session else {
+            throw ClientError.server(message: "Please sign in again.")
+        }
+        let owner = session.userID.uuidString.lowercased()
+
+        if !update.newExercises.isEmpty {
+            let rows: [[String: Any]] = update.newExercises.map { exercise in
+                var row: [String: Any] = [
+                    "id": exercise.id.uuidString.lowercased(),
+                    "owner_id": owner,
+                    "name": exercise.name
+                ]
+                // Bulk inserts need the same keys on every row.
+                row["tracking_mode"] = exercise.trackingMode.map { $0.rawValue as Any } ?? NSNull()
+                return row
+            }
+            // A retry after a failed save may resend a move that was already created.
+            _ = try await client.rest(path: "exercises?on_conflict=id", method: "POST", body: rows, prefer: "resolution=ignore-duplicates,return=minimal")
+        }
+
+        if update.editsTodaysRoutine() {
+            let routineID = update.base.id.uuidString.lowercased()
+            let removed = update.removedItemIDs
+            if !removed.isEmpty {
+                let list = removed.map { $0.uuidString.lowercased() }.joined(separator: ",")
+                _ = try await client.rest(path: "routine_items?id=in.(\(list))", method: "DELETE", prefer: "return=minimal")
+            }
+            let kept = update.items.filter { !update.newItemIDs.contains($0.id) }
+            try await setPositions(kept.map(\.id), offset: Self.parkedPositionOffset)
+            for item in kept {
+                _ = try await client.rest(
+                    path: "routine_items?id=eq.\(item.id.uuidString.lowercased())",
+                    method: "PATCH",
+                    body: Self.prescriptionBody(item),
+                    prefer: "return=minimal"
+                )
+            }
+            let added = update.items.filter { update.newItemIDs.contains($0.id) }
+            if !added.isEmpty {
+                let rows = added.map { Self.insertBody($0, routineID: routineID, owner: owner, keepID: true) }
+                _ = try await client.rest(path: "routine_items", method: "POST", body: rows, prefer: "return=minimal")
+            }
+        } else {
+            // Keep the older plan for past days in History; the new plan starts today.
+            // Upsert so a routine already dated today (say, from a save that failed partway) is reused.
+            var routineBody: [String: Any] = [
+                "owner_id": owner,
+                "scheduled_for": LocalDateKey.string(for: .now)
+            ]
+            routineBody["title"] = update.base.title.map { $0 as Any } ?? NSNull()
+            let data = try await client.rest(
+                path: "routines?on_conflict=owner_id,scheduled_for&select=id",
+                method: "POST",
+                body: routineBody,
+                prefer: "resolution=merge-duplicates,return=representation"
+            )
+            struct Created: Decodable { let id: UUID }
+            guard let created = try JSONDecoder.supabase.decode([Created].self, from: data).first else {
+                throw ClientError.invalidResponse
+            }
+            let routineID = created.id.uuidString.lowercased()
+            _ = try await client.rest(path: "routine_items?routine_id=eq.\(routineID)", method: "DELETE", prefer: "return=minimal")
+            if !update.items.isEmpty {
+                let rows = update.items.map { Self.insertBody($0, routineID: routineID, owner: owner, keepID: false) }
+                _ = try await client.rest(path: "routine_items", method: "POST", body: rows, prefer: "return=minimal")
+            }
+        }
+
+        // Last, so a failed save above leaves the log screen asking for the same numbers as before.
+        for (exerciseID, mode) in update.trackingModeChanges {
+            _ = try await client.rest(
+                path: "exercises?id=eq.\(exerciseID.uuidString.lowercased())",
+                method: "PATCH",
+                body: ["tracking_mode": mode.rawValue],
+                prefer: "return=minimal"
+            )
+        }
+        return try await todayRoutine()
+    }
+
+    private static let parkedPositionOffset = 10_000
+
+    private func setPositions(_ itemIDs: [UUID], offset: Int) async throws {
         for (position, id) in itemIDs.enumerated() {
             _ = try await client.rest(
                 path: "routine_items?id=eq.\(id.uuidString.lowercased())",
                 method: "PATCH",
-                body: ["position": position],
+                body: ["position": position + offset],
                 prefer: "return=minimal"
             )
         }
+    }
+
+    /// Every prescription column, with NSNull for anything the other mode used, so a switch
+    /// from reps to time (or band to weight) clears the old values.
+    private static func prescriptionBody(_ item: RoutineItem) -> [String: Any] {
+        [
+            "position": item.position,
+            "target_sets": item.targetSets.map { $0 as Any } ?? NSNull(),
+            "target_reps": item.targetReps.map { $0 as Any } ?? NSNull(),
+            "target_duration_seconds": item.targetDurationSeconds.map { $0 as Any } ?? NSNull(),
+            "target_band_resistance": item.targetBandResistance.map { $0 as Any } ?? NSNull(),
+            "target_weight_value": item.targetWeightValue.map { $0 as Any } ?? NSNull(),
+            "target_weight_unit": item.targetWeightUnit.map { $0.rawValue as Any } ?? NSNull()
+        ]
+    }
+
+    private static func insertBody(_ item: RoutineItem, routineID: String, owner: String, keepID: Bool) -> [String: Any] {
+        var body = prescriptionBody(item)
+        body["owner_id"] = owner
+        body["routine_id"] = routineID
+        body["exercise_id"] = item.exercise.id.uuidString.lowercased()
+        // Bulk inserts need the same keys on every row, so absent values are sent as null.
+        body["prescription_notes"] = item.prescriptionNotes.map { $0 as Any } ?? NSNull()
+        if keepID { body["id"] = item.id.uuidString.lowercased() }
+        return body
     }
 
     private func retainAudio(

@@ -1,0 +1,116 @@
+name: Audio-to-structure eval
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/audio-to-structure-eval.yml"
+      - "evals/audio_to_structure/**"
+      - "scripts/dev_transcription_server.py"
+      - "supabase/functions/parse-exercise-log/**"
+      - "supabase/functions/_shared/exercise-log.ts"
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: Evaluation tier
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - full
+          - stability
+
+permissions:
+  contents: read
+
+concurrency:
+  group: audio-to-structure-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      EVAL_TIER: ${{ github.event_name == 'workflow_dispatch' && inputs.tier || 'smoke' }}
+      HF_HOME: ${{ github.workspace }}/evals/audio_to_structure/.cache/huggingface
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      MOTIONLOG_TEST_PHONE: ${{ secrets.MOTIONLOG_TEST_PHONE }}
+      MOTIONLOG_TEST_OTP: ${{ secrets.MOTIONLOG_TEST_OTP }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: evals/audio_to_structure/requirements.txt
+
+      - name: Install system audio tools
+        run: sudo apt-get update && sudo apt-get install --yes ffmpeg espeak-ng
+
+      - name: Restore model and audio caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            evals/audio_to_structure/.cache
+            .dev-cache/whisper
+          key: audio-eval-${{ runner.os }}-${{ hashFiles('evals/audio_to_structure/requirements.txt', 'evals/audio_to_structure/motionlog_eval/catalog.py', 'evals/audio_to_structure/motionlog_eval/audio.py') }}
+          restore-keys: |
+            audio-eval-${{ runner.os }}-
+
+      - name: Install Python dependencies
+        run: |
+          pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install --requirement evals/audio_to_structure/requirements.txt
+
+      - name: Run evaluator unit tests
+        env:
+          PYTHONPATH: evals/audio_to_structure
+        run: pytest --quiet evals/audio_to_structure/tests
+
+      - name: Start local Whisper endpoint
+        run: |
+          python scripts/dev_transcription_server.py > /tmp/motionlog-transcription.log 2>&1 &
+          echo $! > /tmp/motionlog-transcription.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:55330/health > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/motionlog-transcription.log
+          exit 1
+
+      - name: Run ${{ env.EVAL_TIER }} evaluation
+        id: evaluation
+        env:
+          PYTHONPATH: evals/audio_to_structure
+        run: python -m motionlog_eval.runner --tier "$EVAL_TIER"
+
+      - name: Publish evaluation summary
+        if: always()
+        run: |
+          if [ -f evals/audio_to_structure/output/summary.md ]; then
+            cat evals/audio_to_structure/output/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Evaluation report unavailable" >> "$GITHUB_STEP_SUMMARY"
+            echo "The evaluator did not produce \`summary.md\`. Inspect the job log for the stage that failed." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Show transcription service log on failure
+        if: failure()
+        run: tail -200 /tmp/motionlog-transcription.log || true
+
+      - name: Upload evaluation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: motionlog-audio-eval-${{ env.EVAL_TIER }}-${{ github.run_id }}
+          path: evals/audio_to_structure/output/
+          if-no-files-found: warn
+          retention-days: 30

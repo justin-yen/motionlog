@@ -3,15 +3,31 @@ import Foundation
 protocol PTRepository: Sendable {
     func todayRoutine() async throws -> Routine
     func saveLog(_ draft: ExerciseLogDraft) async throws -> ExerciseLog
-    func history() async throws -> [ExerciseLog]
+    /// Logs performed in [start, end), newest first.
+    func logs(from start: Date, to end: Date) async throws -> [ExerciseLog]
     func reorder(routineID: UUID, itemIDs: [UUID]) async throws
+    /// Exercises the user already has, for the add-a-move picker.
+    func exercises() async throws -> [Exercise]
+    /// The plans that cover days in [start, end): every plan dated inside the range, plus the
+    /// newest plan dated before it (which is still in force when the range begins). Newest first.
+    func plans(from start: Date, to end: Date) async throws -> [Routine]
+    /// Saves an edited plan and returns the routine Today should now show.
+    func saveRoutine(_ update: RoutineUpdate) async throws -> Routine
 }
 
 actor MockPTRepository: PTRepository {
     private var routine = SampleData.routine
     private var logs: [ExerciseLog] = []
+    private var pastRoutines: [Routine] = []
+    private var library = [SampleData.bridge, SampleData.standingRow, SampleData.heelRaise, SampleData.clamshell]
+    private var todayRoutineRequests = 0
 
-    func todayRoutine() async throws -> Routine { routine }
+    func todayRoutine() async throws -> Routine {
+        todayRoutineRequests += 1
+        return routine
+    }
+
+    func todayRoutineRequestCount() -> Int { todayRoutineRequests }
 
     func saveLog(_ draft: ExerciseLogDraft) async throws -> ExerciseLog {
         let log = ExerciseLog(
@@ -37,7 +53,10 @@ actor MockPTRepository: PTRepository {
         return log
     }
 
-    func history() async throws -> [ExerciseLog] { logs }
+    func logs(from start: Date, to end: Date) async throws -> [ExerciseLog] {
+        logs.filter { $0.performedAt >= start && $0.performedAt < end }
+            .sorted { $0.performedAt > $1.performedAt }
+    }
 
     func reorder(routineID: UUID, itemIDs: [UUID]) async throws {
         guard routine.id == routineID else { return }
@@ -47,6 +66,29 @@ actor MockPTRepository: PTRepository {
             item.position = position
             return item
         }
+    }
+
+    func plans(from start: Date, to end: Date) async throws -> [Routine] {
+        PlanRange.covering(start: start, end: end, in: [routine] + pastRoutines)
+    }
+
+    func exercises() async throws -> [Exercise] {
+        library.sorted { $0.name < $1.name }
+    }
+
+    func saveRoutine(_ update: RoutineUpdate) async throws -> Routine {
+        library.append(contentsOf: update.newExercises)
+        for (id, mode) in update.trackingModeChanges {
+            if let index = library.firstIndex(where: { $0.id == id }) { library[index].trackingMode = mode }
+        }
+        if !update.editsTodaysRoutine() { pastRoutines.insert(routine, at: 0) }
+        routine = Routine(
+            id: update.editsTodaysRoutine() ? update.base.id : UUID(),
+            title: update.base.title,
+            scheduledFor: .now,
+            routineItems: update.items
+        )
+        return routine
     }
 }
 

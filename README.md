@@ -16,7 +16,7 @@ The workspace is linked and the versioned migrations have been applied to the ho
 - Phone: `+1 202-555-0147`
 - Code: `123456`
 
-This is a fictional test number. Supabase accepts its fixed code without sending a message. A development-only Send SMS Hook rejects every real phone number, preventing accidental SMS charges. Remove `[auth.sms.test_otp]`, replace the hook with a real provider, and expire the test user before beta.
+This is a fictional test number. Debug builds recognize it locally, skip the unnecessary SMS request and its resend cooldown, and show the fixed code on the verification screen. Supabase accepts the code without sending a message. A development-only Send SMS Hook rejects every real phone number, preventing accidental SMS charges. Remove the Debug test-login settings, `[auth.sms.test_otp]`, replace the hook with a real provider, and expire the test user before beta.
 
 ## First vertical slice
 
@@ -62,6 +62,7 @@ The iOS app runs with seeded local data when Supabase configuration is absent. T
 
 - `supabase/` contains the local configuration and versioned database migrations.
 - `docs/api-contract.md` documents the data boundary shared by iOS and the backend.
+- `docs/prds/audio-to-structure-eval-pipeline.md` defines the automated voice-to-form evaluation pipeline and release gates.
 - `ios/PTTracker/` contains the SwiftUI application source.
 - `ios/project.yml` is the reproducible XcodeGen project definition.
 
@@ -100,3 +101,9 @@ xcodebuild -project PTTracker.xcodeproj -scheme PTTracker \
   -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath /tmp/PTTrackerDerivedData CODE_SIGNING_ALLOWED=NO build
 ```
+
+## Audio-to-structure evaluation
+
+The automated voice-note evaluation uses local Kokoro audio, the simulator Whisper endpoint, and the authenticated hosted parser. Pull requests that affect the pipeline run the 48-case smoke tier. The full and stability tiers are available from the GitHub Actions **Audio-to-structure eval** workflow.
+
+Each run prints a Markdown report in the action log and job summary, then uploads a self-contained HTML report plus JSON and JUnit evidence. Setup, required repository secrets, and local commands are documented in [`evals/audio_to_structure/README.md`](evals/audio_to_structure/README.md).

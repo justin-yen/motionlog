@@ -111,6 +111,17 @@ struct HistoryDaySnapshot: Equatable {
     }
 }
 
+extension Array where Element == Routine {
+    /// The newest plan dated on or before this day. Edits start the day they're saved, so a
+    /// past day keeps the prescription it had.
+    func plan(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> Routine? {
+        let day = LocalDateKey.string(for: date, calendar: calendar)
+        return self
+            .filter { LocalDateKey.string(for: $0.scheduledFor, calendar: calendar) <= day }
+            .max { LocalDateKey.string(for: $0.scheduledFor, calendar: calendar) < LocalDateKey.string(for: $1.scheduledFor, calendar: calendar) }
+    }
+}
+
 private extension String {
     var nilIfEmpty: String? { isEmpty ? nil : self }
 }
@@ -132,13 +143,8 @@ struct HistoryView: View {
             ZStack(alignment: .top) {
                 overview
 
-                if let selectedDate, let routine = model.routine {
-                    let snapshot = HistoryDaySnapshot.make(
-                        date: selectedDate,
-                        routine: routine,
-                        logs: model.history,
-                        calendar: calendar
-                    )
+                if let selectedDate, model.plan(for: selectedDate) != nil {
+                    let snapshot = snapshot(for: selectedDate)
                     HistoryDayPanel(
                         snapshot: snapshot,
                         isExpanded: $panelIsExpanded,
@@ -161,6 +167,7 @@ struct HistoryView: View {
         .animation(.spring(response: 0.44, dampingFraction: 0.86), value: selectedDate)
         .animation(.spring(response: 0.38, dampingFraction: 0.88), value: panelIsExpanded)
         .accessibilityAction(.escape, closePanel)
+        .task(id: displayedMonth) { await model.loadHistoryMonth(containing: displayedMonth) }
     }
 
     private var overview: some View {
@@ -229,10 +236,11 @@ struct HistoryView: View {
     }
 
     private func snapshot(for date: Date) -> HistoryDaySnapshot {
-        guard let routine = model.routine else {
+        guard let routine = model.plan(for: date) else {
             return HistoryDaySnapshot(date: date, exercises: [])
         }
-        return HistoryDaySnapshot.make(date: date, routine: routine, logs: model.history, calendar: calendar)
+        let logs = model.historyMonth(containing: date)?.logs(on: date, calendar: calendar) ?? []
+        return HistoryDaySnapshot.make(date: date, routine: routine, logs: logs, calendar: calendar)
     }
 
     private func selectDate(_ date: Date) {
@@ -245,8 +253,15 @@ struct HistoryView: View {
     }
 
     private func closePanel() {
-        panelIsExpanded = false
-        selectedDate = nil
+        // Fade the panel out first and reset its height afterwards. Changing both at once ran two
+        // springs on a view being removed, which could leave a half-faded panel over the calendar.
+        withAnimation(.easeOut(duration: 0.2)) {
+            selectedDate = nil
+        } completion: {
+            var reset = Transaction()
+            reset.disablesAnimations = true
+            withTransaction(reset) { panelIsExpanded = false }
+        }
     }
 }
 
@@ -318,7 +333,8 @@ private struct CalendarDayCell: View {
             RoundedRectangle(cornerRadius: 11)
                 .strokeBorder(border, style: strokeStyle)
 
-            if snapshot.status == .skipped, !isFuture {
+            // Today isn't over, so it never gets the missed-day strike.
+            if snapshot.status == .skipped, !isFuture, !isToday {
                 Capsule().fill(AppTheme.disabled).frame(width: 24, height: 2).rotationEffect(.degrees(-35))
             }
 
@@ -352,6 +368,8 @@ private struct CalendarDayCell: View {
 
     private var fill: Color {
         if isFuture { return .clear }
+        // Solid, so the ink "today" shadow behind the cell can't show through and darken it.
+        if isToday { return AppTheme.done }
         switch snapshot.status {
         case .complete: return AppTheme.done
         case .partial: return AppTheme.done.opacity(0.18)
@@ -370,14 +388,14 @@ private struct CalendarDayCell: View {
     }
 
     private var strokeStyle: StrokeStyle {
-        snapshot.status == .skipped && !isFuture
+        snapshot.status == .skipped && !isFuture && !isToday
             ? StrokeStyle(lineWidth: 2, dash: [5, 4])
             : StrokeStyle(lineWidth: 2)
     }
 
     private var foreground: Color {
         if isFuture { return AppTheme.disabled }
-        return snapshot.status == .complete ? .white : AppTheme.ink
+        return isToday || snapshot.status == .complete ? .white : AppTheme.ink
     }
 
     private var statusLabel: String {

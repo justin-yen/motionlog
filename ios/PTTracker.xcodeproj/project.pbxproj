@@ -14,7 +14,9 @@
 		2A78E3B0ED162B75B10EAFBC /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6336F6C1E0DCB33259EC7C2C /* AppConfiguration.swift */; };
 		36B333381BC7824D158CDBF9 /* VoiceLogTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523563FDF554BB99EAB5C140 /* VoiceLogTranscriber.swift */; };
 		528B906BBC2353CFC88D5A91 /* SupabaseRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7938A208CBDD55BFC403BC /* SupabaseRepository.swift */; };
+		62B77B4C68EE692168B0ADC4 /* HistoryMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC3A77D7C52E73107F12D88 /* HistoryMonth.swift */; };
 		74EB98481841DDD2A0647C7F /* PTTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F8618AB578125ED997F615 /* PTTrackerApp.swift */; };
+		79DDDA54EDA7AAC862FE1A69 /* RoutineEditModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 272B749BC43522F200C56A7B /* RoutineEditModel.swift */; };
 		820B5A5718D0BA178CA3E590 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA4F5215C986C7E3A5ED11E /* AppTheme.swift */; };
 		84A31396E91C62B5F1F14EF6 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873416E508EB78CDA1336C1D /* Repository.swift */; };
 		8706CAF4A9D18C3FDEF93A8A /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B497419B6F7DDA9856AB5800 /* HistoryView.swift */; };
@@ -22,6 +24,7 @@
 		9927A68359B1042BA9835AC1 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78B015F296117F6C7B354E /* ModelTests.swift */; };
 		C510964D814C737FA80E0AAC /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA98888F1ED714A950516E42 /* SupabaseClient.swift */; };
 		D1C65E4E4DECE35E7F691ABC /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F7DE9CD69668807A5CBC13 /* AudioRecorder.swift */; };
+		F2CCB52F356D9A66325D3847 /* RoutineEditViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890608A5E388151CE9A42BC8 /* RoutineEditViews.swift */; };
 		FF5B0379CCC5B83ADC08BC7C /* AuthViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DE603AB85207019C03E2FA /* AuthViews.swift */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +40,8 @@
 
 /* Begin PBXFileReference section */
 		0049440668398599F9E0B5E5 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		1EC3A77D7C52E73107F12D88 /* HistoryMonth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryMonth.swift; sourceTree = "<group>"; };
+		272B749BC43522F200C56A7B /* RoutineEditModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineEditModel.swift; sourceTree = "<group>"; };
 		30344488D240628C92AF571C /* PTTrackerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PTTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		50F8618AB578125ED997F615 /* PTTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PTTrackerApp.swift; sourceTree = "<group>"; };
 		523563FDF554BB99EAB5C140 /* VoiceLogTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceLogTranscriber.swift; sourceTree = "<group>"; };
@@ -46,6 +51,7 @@
 		69AD9EAE869127E7E272BFA9 /* ExerciseLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLogView.swift; sourceTree = "<group>"; };
 		761D7508DE4E788E0D5827B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		873416E508EB78CDA1336C1D /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
+		890608A5E388151CE9A42BC8 /* RoutineEditViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineEditViews.swift; sourceTree = "<group>"; };
 		9786162D8C0B43C0B97432F8 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		99EBB0DCCEF324651122D0EA /* ExerciseLogParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLogParsingService.swift; sourceTree = "<group>"; };
 		9D50D6AE7C1617965374574F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
@@ -96,11 +102,14 @@
 				63DE603AB85207019C03E2FA /* AuthViews.swift */,
 				99EBB0DCCEF324651122D0EA /* ExerciseLogParsingService.swift */,
 				69AD9EAE869127E7E272BFA9 /* ExerciseLogView.swift */,
+				1EC3A77D7C52E73107F12D88 /* HistoryMonth.swift */,
 				B497419B6F7DDA9856AB5800 /* HistoryView.swift */,
 				761D7508DE4E788E0D5827B9 /* Info.plist */,
 				9D50D6AE7C1617965374574F /* Models.swift */,
 				50F8618AB578125ED997F615 /* PTTrackerApp.swift */,
 				873416E508EB78CDA1336C1D /* Repository.swift */,
+				272B749BC43522F200C56A7B /* RoutineEditModel.swift */,
+				890608A5E388151CE9A42BC8 /* RoutineEditViews.swift */,
 				FC31309544EAE215E11A65C6 /* RoutineViews.swift */,
 				FA98888F1ED714A950516E42 /* SupabaseClient.swift */,
 				CB7938A208CBDD55BFC403BC /* SupabaseRepository.swift */,
@@ -211,10 +220,13 @@
 				FF5B0379CCC5B83ADC08BC7C /* AuthViews.swift in Sources */,
 				13ECA893B2CBF071B70C57B0 /* ExerciseLogParsingService.swift in Sources */,
 				12F7F09EE4E4C8ACB57B5BC5 /* ExerciseLogView.swift in Sources */,
+				62B77B4C68EE692168B0ADC4 /* HistoryMonth.swift in Sources */,
 				8706CAF4A9D18C3FDEF93A8A /* HistoryView.swift in Sources */,
 				018A294197C89B0B8F5C5E74 /* Models.swift in Sources */,
 				74EB98481841DDD2A0647C7F /* PTTrackerApp.swift in Sources */,
 				84A31396E91C62B5F1F14EF6 /* Repository.swift in Sources */,
+				79DDDA54EDA7AAC862FE1A69 /* RoutineEditModel.swift in Sources */,
+				F2CCB52F356D9A66325D3847 /* RoutineEditViews.swift in Sources */,
 				19F074B5F41C737958C036F4 /* RoutineViews.swift in Sources */,
 				C510964D814C737FA80E0AAC /* SupabaseClient.swift in Sources */,
 				528B906BBC2353CFC88D5A91 /* SupabaseRepository.swift in Sources */,

@@ -150,7 +150,9 @@ actor SupabaseClient {
         }
         guard 200..<300 ~= http.statusCode else {
             let payload = try? JSONDecoder().decode(ServerError.self, from: data)
-            throw ClientError.server(message: payload?.message ?? payload?.error ?? "Request failed (\(http.statusCode)).")
+            throw ClientError.server(
+                message: payload?.message ?? payload?.msg ?? payload?.error ?? "Request failed (\(http.statusCode))."
+            )
         }
         return data
     }
@@ -217,6 +219,7 @@ private struct VerifyResponse: Decodable {
 
 private struct ServerError: Decodable {
     let message: String?
+    let msg: String?
     let error: String?
 }
 
