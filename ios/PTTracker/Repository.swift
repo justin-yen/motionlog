@@ -20,8 +20,14 @@ actor MockPTRepository: PTRepository {
     private var logs: [ExerciseLog] = []
     private var pastRoutines: [Routine] = []
     private var library = [SampleData.bridge, SampleData.standingRow, SampleData.heelRaise, SampleData.clamshell]
+    private var todayRoutineRequests = 0
 
-    func todayRoutine() async throws -> Routine { routine }
+    func todayRoutine() async throws -> Routine {
+        todayRoutineRequests += 1
+        return routine
+    }
+
+    func todayRoutineRequestCount() -> Int { todayRoutineRequests }
 
     func saveLog(_ draft: ExerciseLogDraft) async throws -> ExerciseLog {
         let log = ExerciseLog(

@@ -16,6 +16,7 @@ struct PTTrackerApp: App {
 
 struct RootView: View {
     @EnvironmentObject private var model: AppModel
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         Group {
@@ -26,8 +27,15 @@ struct RootView: View {
                 CodeVerificationView(phone: phone)
             case .authenticated:
                 MainTabView()
-                    .task { await model.loadHome() }
+                    .task { await model.refreshForCurrentDayIfNeeded() }
             }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task { await model.refreshForCurrentDayIfNeeded() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
+            Task { await model.refreshForCurrentDayIfNeeded() }
         }
         .background(AppTheme.paper.ignoresSafeArea())
         .alert("Something went wrong", isPresented: errorBinding) {

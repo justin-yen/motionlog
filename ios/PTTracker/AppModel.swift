@@ -33,6 +33,8 @@ final class AppModel: ObservableObject {
     private let exerciseLogParser: any ExerciseLogParsingService
     private let authTestPhone: String?
     private let authTestCode: String?
+    private var lastLoadedDay: Date?
+    private var isRefreshingForDayChange = false
 
     init(configuration: AppConfiguration = .current) {
         isMockMode = configuration.useMockData
@@ -59,6 +61,16 @@ final class AppModel: ObservableObject {
             authStep = .phone
             errorMessage = "Supabase configuration is missing."
         }
+    }
+
+    init(repository: any PTRepository) {
+        isMockMode = true
+        self.repository = repository
+        supabase = nil
+        exerciseLogParser = LocalExerciseLogParsingService()
+        authTestPhone = nil
+        authTestCode = nil
+        authStep = .authenticated
     }
 
     func requestCode(phone: String) async {
@@ -90,9 +102,10 @@ final class AppModel: ObservableObject {
         }
     }
 
-    func loadHome() async {
+    func loadHome(at date: Date = .now) async {
+        var didLoad = false
         await perform {
-            let month = HistoryMonth.bounds(containing: .now)
+            let month = HistoryMonth.bounds(containing: date)
             async let routine = self.repository.todayRoutine()
             async let logs = self.repository.logs(from: month.start, to: month.end)
             async let plans = self.repository.plans(from: month.start, to: month.end)
@@ -101,7 +114,20 @@ final class AppModel: ObservableObject {
             self.currentMonthPlans = (try? await plans) ?? []
             self.historyMonths = [:]
             self.history = try await logs
+            didLoad = true
         }
+        if didLoad { lastLoadedDay = Calendar.current.startOfDay(for: date) }
+    }
+
+    /// Refreshes data when an already-running app becomes active on a new local day.
+    /// Same-day foreground transitions are intentionally ignored.
+    func refreshForCurrentDayIfNeeded(at date: Date = .now) async {
+        guard authStep == .authenticated else { return }
+        let day = Calendar.current.startOfDay(for: date)
+        guard lastLoadedDay != day, !isRefreshingForDayChange else { return }
+        isRefreshingForDayChange = true
+        defer { isRefreshingForDayChange = false }
+        await loadHome(at: date)
     }
 
     /// Loads a past month for History the first time it's shown. The current month is kept up

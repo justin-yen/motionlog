@@ -92,6 +92,25 @@ final class ModelTests: XCTestCase {
         XCTAssertNil(model.errorMessage)
     }
 
+    @MainActor
+    func testForegroundRefreshReloadsOnlyAfterLocalDayChanges() async throws {
+        let repository = MockPTRepository()
+        let model = AppModel(repository: repository)
+        let calendar = Calendar.current
+        let firstDay = calendar.startOfDay(for: .now)
+        let laterSameDay = try XCTUnwrap(calendar.date(byAdding: .hour, value: 8, to: firstDay))
+        let nextDay = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: firstDay))
+
+        await model.refreshForCurrentDayIfNeeded(at: firstDay)
+        await model.refreshForCurrentDayIfNeeded(at: laterSameDay)
+        let sameDayRequestCount = await repository.todayRoutineRequestCount()
+        XCTAssertEqual(sameDayRequestCount, 1)
+
+        await model.refreshForCurrentDayIfNeeded(at: nextDay)
+        let nextDayRequestCount = await repository.todayRoutineRequestCount()
+        XCTAssertEqual(nextDayRequestCount, 2)
+    }
+
     func testPrescriptionSummaryKeepsBandAndWeightSeparate() {
         let item = RoutineItem(
             id: UUID(),
